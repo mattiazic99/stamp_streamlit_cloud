@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.ipynb_checkpoints/
+.DS_Store
+
+# Raw GTEx data is NEVER committed (not needed by the web app; huge).
+data/parquet/**
+data/external/**
+!**/.gitkeep
+
+# All-tissues outputs are unused by the app (it runs in complete-age-bins mode).
+output/v8/**
+output/v10/**
+output/compare/**
+!**/.gitkeep
