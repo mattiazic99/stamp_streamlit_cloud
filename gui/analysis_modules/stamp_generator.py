@@ -917,7 +917,11 @@ def show():
                         if "(" in line and ")" in line:
                             ensembl = line.split("(")[0].strip()
                             symbol = line.split("(")[1].replace(")", "").strip()
-                            gene_map[ensembl] = symbol
+                            # Key by the version-less Ensembl ID (drop the ".N"
+                            # suffix) so the mapping works across GTEx releases:
+                            # v8 and v10 use different version numbers for the
+                            # same gene, and all_genes.txt carries v10 versions.
+                            gene_map[ensembl.split(".")[0]] = symbol
                 os.makedirs(DIR_SETS_MAPPED, exist_ok=True)
                 for i, tissue in enumerate(selected_tissues):
                     status_text.text(f"🔬 Mapping symbols: {tissue} ({i+1}/{len(selected_tissues)})")
@@ -926,7 +930,7 @@ def show():
                     if os.path.exists(in_path):
                         with open(in_path, encoding="utf-8") as fin, open(out_path, "w", encoding="utf-8") as fout:
                             for line in fin:
-                                fout.write(" ".join([gene_map.get(g, g) for g in line.strip().split()]) + "\n")
+                                fout.write(" ".join([gene_map.get(g.split(".")[0], g) for g in line.strip().split()]) + "\n")
                     progress_bar.progress(60 + (i + 1) * 35 // len(selected_tissues))
                 progress_bar.progress(100)
                 status_text.text("✅ Generation completed successfully!")
@@ -1026,7 +1030,7 @@ def show():
             
             if st.session_state.selected_files:
                 st.markdown("### ⬇️ Download Options")
-                st.info(f"📦 **{len(st.session_state.selected_files)}** file selezionati")
+                st.info(f"📦 **{len(st.session_state.selected_files)}** files selected")
                 if st.button("📦 Create ZIP Archive", use_container_width=True):
                     buf = BytesIO()
                     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
