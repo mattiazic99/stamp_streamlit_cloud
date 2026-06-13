@@ -896,8 +896,13 @@ def show():
                     cmd.append("--complete-age-bins")
                 if len(selected_tissues) < len(all_tissues):
                     cmd.extend(["--tissues"] + selected_tissues)
-                    
-                rc = run_script_live(cmd)
+
+                # The subprocess runs a fresh Python that must import the local
+                # `stamp` package. On Streamlit Cloud `stamp` is NOT pip-installed,
+                # so we put the project root on PYTHONPATH explicitly.
+                _env = os.environ.copy()
+                _env["PYTHONPATH"] = str(stamp_root) + os.pathsep + _env.get("PYTHONPATH", "")
+                rc = run_script_live(cmd, env=_env)
                 if rc != 0:
                     raise subprocess.CalledProcessError(rc, SCRIPT_SWITCHING)
                 progress_bar.progress(60)
