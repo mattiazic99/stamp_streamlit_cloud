@@ -885,26 +885,28 @@ def show():
                 
                 # === Processing ===
                 status_text.text("⚙️ Processing data (Threshold & Switching)...")
-                
-                cmd = [
-                    sys.executable,
-                    SCRIPT_SWITCHING,
-                    "--version", version,
-                    "--threshold", str(threshold),
-                ]
-                if complete:
-                    cmd.append("--complete-age-bins")
-                if len(selected_tissues) < len(all_tissues):
-                    cmd.extend(["--tissues"] + selected_tissues)
 
-                # The subprocess runs a fresh Python that must import the local
-                # `stamp` package. On Streamlit Cloud `stamp` is NOT pip-installed,
-                # so we put the project root on PYTHONPATH explicitly.
-                _env = os.environ.copy()
-                _env["PYTHONPATH"] = str(stamp_root) + os.pathsep + _env.get("PYTHONPATH", "")
-                rc = run_script_live(cmd, env=_env)
-                if rc != 0:
-                    raise subprocess.CalledProcessError(rc, SCRIPT_SWITCHING)
+                # Run switching IN-PROCESS (no external subprocess) so it works
+                # reliably on Streamlit Cloud, where the `stamp` package is not
+                # pip-installed and a fresh subprocess cannot import it.
+                from stamp.io import load_normalized_tissue, save_sets_txt
+                from stamp.switching import identify_switching_genes
+
+                _n = max(len(selected_tissues), 1)
+                _failures = []
+                for _i, _tissue in enumerate(selected_tissues):
+                    try:
+                        _df = load_normalized_tissue(version, _tissue, complete=complete)
+                        _sets = identify_switching_genes(_df, threshold=threshold)
+                        save_sets_txt(version, _tissue, _sets, complete=complete)
+                    except Exception as _e:
+                        _failures.append(f"{_tissue}: {_e}")
+                    progress_bar.progress(5 + (_i + 1) * 55 // _n)
+
+                if _failures:
+                    st.error("Some tissues failed during switching:")
+                    st.code("\n".join(_failures))
+                    raise RuntimeError(f"{len(_failures)} tissue(s) failed")
                 progress_bar.progress(60)
                 
                 # === Mapping ===
