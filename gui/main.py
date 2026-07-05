@@ -17,6 +17,7 @@ from analysis_modules import (
     migration_page,
     aging_timeline,
     switch_direction,
+    panel_explorer,
 )
 
 # Configure Streamlit page
@@ -513,7 +514,8 @@ analysis_pages = [
     ("📅 Age-Specific Analysis", "age_specific"),
     ("🤝 Gene Sharing Analysis", "gene_sharing"),
     ("🔍 Single Gene Analysis", "single_gene"),
-    ("👥 Group Comparison", "group_comparison")
+    ("👥 Group Comparison", "group_comparison"),
+    ("🧩 Panel Explorer", "panel_explorer")
 ]
 
 # Pipeline Analysis pages (new v8/v10 pages)
@@ -695,6 +697,8 @@ elif page_key == "single_gene":
     single_gene.show()
 elif page_key == "group_comparison":
     group_comparison.show()
+elif page_key == "panel_explorer":
+    panel_explorer.show()
 elif page_key == "aging_timeline":
     aging_timeline.show()
 elif page_key == "switch_direction":
@@ -713,4 +717,4 @@ st.markdown("""
 <div style="text-align: center; color: #666; padding: 1rem;">
     <p>🧬 STAMP - Gene Switching Explorer | Built with Streamlit</p>
 </div>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html=True)
