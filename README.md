@@ -1,6 +1,6 @@
 # STAMP
 
-[Open the application](https://stampgui.streamlit.app/)
+[Open the application](https://stampv2.streamlit.app/)
 
 STAMP explores gene switching across age groups using GTEx v10. Panel Explorer
 also compares events with GTEx v8.
