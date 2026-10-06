@@ -7,21 +7,31 @@ also compares events with GTEx v8.
 
 ## Docker
 
-Start Docker Desktop with Linux containers. From the repository root, run:
+Docker runs the interface locally and includes Python and all required dependencies.
+Statistical experiments use the separate environment described below.
+
+1. Install and start [Docker Desktop](https://docs.docker.com/get-started/get-docker/),
+   using Linux containers on Windows.
+2. Download and extract this repository, or clone it. Open a terminal (PowerShell
+   on Windows) in the folder containing `Dockerfile` and `docker-compose.yml`.
+3. Build and start the application:
 
 ```bash
 docker compose up --build --wait
 ```
 
-Open [localhost:8501](http://localhost:8501). To stop the container:
+The first build downloads the dependencies and requires an internet connection.
+The command returns when the app is ready and leaves it running in the background.
+Open [localhost:8501](http://localhost:8501) in your browser.
+
+To stop the app and remove its container, run from the same folder:
 
 ```bash
 docker compose down
 ```
 
-Docker runs the interface with the bundled atlas. Generated downloads are held
-in memory; download the ZIP to keep a local copy. **Start New Generation** clears
-the current results. Statistical experiments run separately.
+Generated files stay in session memory. Download the ZIP to save them on your
+computer; **Start New Generation** clears the current results.
 
 ## Local installation
 
