@@ -7,28 +7,42 @@ also compares events with GTEx v8.
 
 ## Docker
 
-Docker runs the interface locally and includes Python and all required dependencies.
+Install and start [Docker Desktop](https://docs.docker.com/get-started/get-docker/),
+using Linux containers on Windows. Docker includes Python and the interface dependencies.
 Statistical experiments use the separate environment described below.
 
-1. Install and start [Docker Desktop](https://docs.docker.com/get-started/get-docker/),
-   using Linux containers on Windows.
-2. Download and extract this repository, or clone it. Open a terminal (PowerShell
-   on Windows) in the folder containing `Dockerfile` and `docker-compose.yml`.
-3. Build and start the application:
+### Ready-to-run image
+
+Use `stamp-interface-linux-amd64.tar` from
+[GitHub Releases](https://github.com/mattiazic99/stamp_streamlit_cloud/releases)
+when available. It contains the interface and atlas for `linux/amd64`.
+Open a terminal in the folder containing the downloaded archive and run:
+
+```bash
+docker load --input stamp-interface-linux-amd64.tar
+docker run --detach --name stamp-interface --publish 127.0.0.1:8501:8501 stamp-interface:latest
+```
+
+After startup, open [localhost:8501](http://localhost:8501).
+To stop or restart this container:
+
+```bash
+docker stop stamp-interface
+docker start stamp-interface
+```
+
+### Build from source
+
+Alternatively, download and extract this repository, or clone it. Open a terminal
+in the folder containing `Dockerfile` and `docker-compose.yml`, then run:
 
 ```bash
 docker compose up --build --wait
 ```
 
-The first build downloads the dependencies and requires an internet connection.
-The command returns when the app is ready and leaves it running in the background.
-Open [localhost:8501](http://localhost:8501) in your browser.
-
-To stop the app and remove its container, run from the same folder:
-
-```bash
-docker compose down
-```
+The first build requires an internet connection. When the command returns, open
+[localhost:8501](http://localhost:8501). To stop and remove this container, run
+`docker compose down` from the same folder. Use one Docker method at a time.
 
 Generated files stay in session memory. Download the ZIP to save them on your
 computer; **Start New Generation** clears the current results.
