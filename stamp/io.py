@@ -1,23 +1,11 @@
-"""Loading and dumping of TPM matrices, metadata, and pipeline outputs.
+"""Read and write TPM matrices, metadata and pipeline outputs.
 
-Two distinct phases:
-    1. One-shot ingestion from Cassandra to Parquet (cassandra_to_parquet).
-       Done once per GTEx version on a machine that has access to the
-       Cassandra cluster. Produces compact Parquet files in float32 with
-       gene_id index and original (with-dashes) sample_ids as columns.
-    2. Runtime loading from Parquet, used by every step of the pipeline.
+Raw inputs are prepared by scripts/00_build_parquet_from_gtex.py. Runtime loaders
+read those Parquet files, normalized tissue matrices, and five-line gene-set files.
+Selective sample-column reads reduce memory use when loading a single tissue.
 
-Memory considerations
----------------------
-- TPM matrix on disk: float32, snappy-compressed Parquet (~1-2 GB).
-- Metadata: pyarrow with proper categorical dtypes for tissue/bracket.
-- Normalized per-tissue outputs: float32 Parquet, <100 MB each.
-- Sets files: plain text, 5 lines, gene_ids space-separated. Tiny.
-
-Streamlit Cloud constraint
---------------------------
-The TPM Parquet (1-2 GB) is NOT meant to be deployed on Streamlit Cloud.
-Only pre-computed pipeline outputs (sets, Jaccard, PPI, migration) are.
+Streamlit uses the bundled normalized atlas and gene sets; the full sample-level
+TPM matrix is reserved for the offline pipeline.
 """
 from __future__ import annotations
 
@@ -36,22 +24,10 @@ from stamp.config import (
 )
 
 
-# ===========================================================================
-# Cassandra -> Parquet (one-shot ingestion)
-# ===========================================================================
-# Implementation of the Cassandra dump is in scripts/00_dump_cassandra.py
-# rather than here, because:
-#   - it requires the cassandra-driver and a live Cassandra connection,
-#     which we do not want to import or mock in the io module
-#   - it is a one-shot operation, not a runtime function
-#
-# This module exposes only the loaders that the pipeline needs at runtime.
-# ===========================================================================
+# Raw-input conversion belongs to scripts/00_build_parquet_from_gtex.py.
 
 
-# ===========================================================================
 # Parquet loaders (runtime)
-# ===========================================================================
 
 def load_tpm_matrix(
     version: GtexVersion,
@@ -161,9 +137,7 @@ def load_sets_txt(
     }
 
 
-# ===========================================================================
 # Parquet writers (runtime)
-# ===========================================================================
 
 def save_normalized_tissue(
     version: GtexVersion,
@@ -202,6 +176,8 @@ def save_sets_txt(
     tissue: str,
     sets_by_bracket: dict[str, list[str]],
     complete: bool = False,
+    *,
+    output_dir: Path | None = None,
 ) -> Path:
     """Save switching gene sets to a text file with exactly 5 lines.
 
@@ -232,7 +208,8 @@ def save_sets_txt(
             f"Allowed: {SWITCHING_BRACKETS}"
         )
 
-    out_dir = paths_for(version, complete)["sets"]
+    # Interactive exports must not replace the published atlas.
+    out_dir = Path(output_dir) if output_dir is not None else paths_for(version, complete)["sets"]
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / f"{_safe_filename(tissue)}_sets.txt"
 
@@ -244,9 +221,7 @@ def save_sets_txt(
     return path
 
 
-# ===========================================================================
 # Helpers
-# ===========================================================================
 
 def _safe_filename(tissue: str) -> str:
     """Convert a tissue display name into a filesystem-safe filename.

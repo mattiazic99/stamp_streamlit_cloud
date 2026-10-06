@@ -1,15 +1,8 @@
-"""Tissue completeness helpers for the "complete age-bin coverage" mode.
+"""Find tissues with samples in all six GTEx age brackets.
 
-A tissue has *complete age-bin coverage* if it has at least one valid sample
-in ALL six GTEx age brackets (`stamp.config.AGE_BRACKETS`). Tissues missing
-one or more brackets cannot be evaluated for switching across the full
-lifespan without treating a missing bracket as "no data" — so the main
-analysis can optionally restrict to complete tissues, keeping all-tissue
-results as a sensitivity analysis.
-
-These helpers compute completeness *dynamically* from the metadata, so they
-stay correct if the underlying GTEx dump changes. The hard-coded reference
-sets in `stamp.config` are for documentation/tests only.
+Complete mode excludes tissues missing a bracket; all-tissues mode retains them
+for sensitivity analyses. Coverage is computed from metadata. The reference sets
+in stamp.config are for documentation and tests, not for filtering.
 """
 from __future__ import annotations
 
@@ -20,24 +13,23 @@ from stamp.config import AGE_BRACKETS
 
 def tissues_with_complete_age_bins(metadata: pd.DataFrame) -> list[str]:
     """Return the sorted list of tissues with a valid sample in every bracket.
-
+    
     Parameters
     ----------
     metadata : DataFrame
         Must contain columns ``tissue`` and ``age_bracket``.
-
+    
     Returns
     -------
     list[str]
-        Tissues (sorted) that have >= 1 sample in EACH of the six
+        Tissues (sorted) that have >= 1 sample in each of the six
         ``AGE_BRACKETS``. Samples whose ``age_bracket`` is NaN or outside
         ``AGE_BRACKETS`` are ignored when assessing completeness.
-
+    
     Raises
     ------
     ValueError
-        If the required columns are missing.
-    """
+        If the required columns are missing."""
     required_cols = {"tissue", "age_bracket"}
     missing = required_cols - set(metadata.columns)
     if missing:
@@ -45,7 +37,7 @@ def tissues_with_complete_age_bins(metadata: pd.DataFrame) -> list[str]:
 
     required_brackets = set(AGE_BRACKETS)
 
-    # Keep only rows with a valid (in-range, non-null) bracket.
+    # Missing and out-of-range labels cannot satisfy bracket coverage.
     valid = metadata[metadata["age_bracket"].isin(AGE_BRACKETS)]
 
     present_by_tissue = valid.groupby("tissue")["age_bracket"].agg(
@@ -70,12 +62,9 @@ def common_complete_tissues(
     metadata_a: pd.DataFrame,
     metadata_b: pd.DataFrame,
 ) -> list[str]:
-    """Tissues with complete coverage in BOTH versions (for v8-vs-v10).
-
-    This is the like-for-like set used when comparing two GTEx releases on
-    identical tissues: a tissue is kept only if it is complete in both
-    ``metadata_a`` and ``metadata_b`` (equivalently, excluding the union of
-    each version's incomplete tissues).
+    """Return sorted tissues with full age-bin coverage in both metadata tables.
+    
+    This keeps the tissue set identical when comparing GTEx releases.
     """
     a = set(tissues_with_complete_age_bins(metadata_a))
     b = set(tissues_with_complete_age_bins(metadata_b))

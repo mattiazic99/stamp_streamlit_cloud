@@ -15,9 +15,7 @@ from stamp.io import (
 )
 
 
-# ---------------------------------------------------------------------------
 # Filename sanitisation
-# ---------------------------------------------------------------------------
 
 def test_safe_filename_simple():
     assert _safe_filename("Liver") == "Liver"
@@ -39,9 +37,7 @@ def test_safe_filename_strips_leading_trailing():
     assert _safe_filename(" -- xyz -- ") == "xyz"
 
 
-# ---------------------------------------------------------------------------
 # Sets file: write + read round-trip
-# ---------------------------------------------------------------------------
 
 def test_save_and_load_sets_full(monkeypatch, tmp_path):
     """Round-trip: write a sets file, read it back, check identity."""
@@ -59,6 +55,17 @@ def test_save_and_load_sets_full(monkeypatch, tmp_path):
 
     loaded = load_sets_txt("v10", "Liver")
     assert loaded == sets
+
+
+def test_interactive_export_does_not_modify_published_atlas(monkeypatch, tmp_path):
+    _redirect_paths_to_tmp(monkeypatch, tmp_path)
+    atlas = save_sets_txt("v10", "Liver", {"30-39": ["published"]})
+    before = atlas.read_bytes()
+    exported = save_sets_txt("v10", "Liver", {"40-49": ["generated"]},
+                             output_dir=tmp_path / "session/exports")
+    assert atlas.read_bytes() == before
+    assert exported != atlas
+    assert exported.read_text().splitlines() == ["", "generated", "", "", ""]
 
 
 def test_save_sets_with_partial_dict(monkeypatch, tmp_path):
@@ -114,9 +121,7 @@ def test_load_sets_rejects_wrong_line_count(monkeypatch, tmp_path):
         load_sets_txt("v10", "Liver")
 
 
-# ---------------------------------------------------------------------------
 # Normalized matrix: write + read round-trip
-# ---------------------------------------------------------------------------
 def test_save_and_load_normalized_round_trip(monkeypatch, tmp_path):
     _redirect_paths_to_tmp(monkeypatch, tmp_path)
 
@@ -162,9 +167,7 @@ def test_load_metadata_missing_file_raises(monkeypatch, tmp_path):
         load_metadata("v10")
 
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
 
 def _redirect_paths_to_tmp(monkeypatch, tmp_path):
     """Redirect stamp.config paths to a pytest tmp directory for isolation.

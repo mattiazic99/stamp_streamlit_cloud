@@ -1,0 +1,29 @@
+{
+  "python_major_minor": "3.11",
+  "packages": {
+    "colorama": "0.4.6",
+    "contourpy": "1.0.7",
+    "cycler": "0.11.0",
+    "fonttools": "4.39.3",
+    "imbalanced-learn": "0.14.2",
+    "joblib": "1.5.3",
+    "kiwisolver": "1.4.4",
+    "matplotlib": "3.10.8",
+    "numpy": "2.4.4",
+    "packaging": "24.2",
+    "pandas": "2.3.3",
+    "pillow": "11.3.0",
+    "pyarrow": "19.0.1",
+    "pyparsing": "3.0.9",
+    "python-dateutil": "2.9.0.post0",
+    "pytz": "2023.3",
+    "scikit-learn": "1.8.0",
+    "scipy": "1.17.0",
+    "six": "1.16.0",
+    "sklearn-compat": "0.1.6",
+    "threadpoolctl": "3.6.0",
+    "tqdm": "4.67.1",
+    "tzdata": "2023.3"
+  },
+  "provenance": "Environment captured on 2026-10-06. Historical runs did not record a package manifest; fresh prefix replay must verify compatibility."
+}

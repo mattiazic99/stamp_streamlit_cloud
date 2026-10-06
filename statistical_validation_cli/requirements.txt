@@ -1,0 +1,2 @@
+# SMOTE dependency; use requirements-reproduction.lock.txt for manuscript reproduction.
+imbalanced-learn==0.14.2

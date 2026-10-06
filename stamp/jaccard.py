@@ -37,9 +37,7 @@ import pandas as pd
 from stamp.config import SWITCHING_BRACKETS
 
 
-# ---------------------------------------------------------------------------
 # Core: pairwise Jaccard on sets
-# ---------------------------------------------------------------------------
 
 def jaccard(set_a: set[str], set_b: set[str]) -> float:
     """Standard Jaccard index. Returns 0.0 for two empty sets."""
@@ -50,9 +48,7 @@ def jaccard(set_a: set[str], set_b: set[str]) -> float:
     return inter / union if union > 0 else 0.0
 
 
-# ---------------------------------------------------------------------------
 # Per-pair similarity metrics
-# ---------------------------------------------------------------------------
 
 def jaccard_age_pair(
     sets_a: dict[str, list[str]],
@@ -93,9 +89,7 @@ def jaccard_life_pair(
     return jaccard(union_a, union_b)
 
 
-# ---------------------------------------------------------------------------
 # Full similarity matrices
-# ---------------------------------------------------------------------------
 
 def tissue_similarity_age(
     sets_by_tissue: dict[str, dict[str, list[str]]],
@@ -127,9 +121,7 @@ def tissue_similarity_life(
     return _build_matrix(sets_by_tissue, jaccard_life_pair)
 
 
-# ---------------------------------------------------------------------------
 # Internal helpers
-# ---------------------------------------------------------------------------
 
 def _build_matrix(
     sets_by_tissue: dict[str, dict[str, list[str]]],

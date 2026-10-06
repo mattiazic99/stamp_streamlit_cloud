@@ -4,24 +4,19 @@ import re
 from typing import List, Tuple, Dict, Optional, Union
 
 def extract_tissue_name(filename: str) -> str:
-    """
-    Extract clean tissue name from filename - PULIZIA DIRETTA E SEMPLICE
+    """Read a tissue label from a filename, removing extensions and pipeline suffixes.
     
-    Args:
-        filename: Original filename (e.g., "Brain - Hypothalamus_sets_mapped.txt")
-        
-    Returns:
-        Clean tissue name (e.g., "Brain - Hypothalamus")
+    For example, Brain - Hypothalamus_sets_mapped.txt becomes Brain - Hypothalamus.
     """
-    # Inizia con il nome del file
+    # Start from the raw file name.
     clean_name = filename
     
-    # Rimuovi TUTTE le estensioni
+    # Drop every extension.
     extensions_to_remove = ['.txt', '.csv', '.tsv', '.TXT', '.CSV', '.TSV']
     for ext in extensions_to_remove:
         clean_name = clean_name.replace(ext, '')
     
-    # Rimuovi TUTTI i suffissi indesiderati (case insensitive)
+    # Drop the known pipeline suffixes (case-insensitive).
     suffixes_to_remove = [
         '_sets_mapped', '_sets_Mapped', '_SETS_MAPPED', '_SETS_mapped',
         '_sets', '_SETS', '_Sets',
@@ -41,17 +36,17 @@ def extract_tissue_name(filename: str) -> str:
     for suffix in suffixes_to_remove:
         clean_name = clean_name.replace(suffix, '')
     
-    # Pulisci underscores consecutivi e sostituisci con spazi
+    # Collapse runs of underscores and turn them into spaces.
     clean_name = clean_name.replace('__', '_').replace('___', '_')
     clean_name = clean_name.replace('_', ' ')
     
-    # Rimuovi spazi multipli e trim
+    # Collapse whitespace and trim the label.
     clean_name = re.sub(r'\s+', ' ', clean_name).strip()
     
-    # Se il nome è vuoto o troppo corto, usa un fallback
+    # Fall back to the filename when cleanup leaves no useful label.
     if not clean_name or len(clean_name) < 2:
-        # Estrai solo la parte principale del filename originale
-        base_name = filename.split('.')[0]  # Rimuovi estensione
+        # Keep only the leading part of the original file name.
+        base_name = filename.split('.')[0]  # Remove the extension.
         base_name = base_name.replace('_', ' ')
         return base_name if base_name else "Unknown Tissue"
     
@@ -71,19 +66,18 @@ def parse_stamp_file(uploaded_file, age_groups: List[str]) -> Tuple[List[str], L
         return [], [], pd.DataFrame(columns=["Age", "Gene"])
 
     try:
-        # Read file content
         content = uploaded_file.read().decode("utf-8")
         # Reset stream so the file can be re-read if needed
         uploaded_file.seek(0)
 
-        # ── strict format validation ────────────────────────────────
+        # strict format validation
         validation = validate_stamp_format(content, expected_age_groups=len(age_groups))
         if not validation['is_valid']:
             empty_df = pd.DataFrame(columns=["Age", "Gene"])
             empty_df.attrs['_validation'] = validation
             return [], [], empty_df
 
-        # ── Prepare lines (same logic as validate_stamp_format) ─────
+        # Prepare lines (same logic as validate_stamp_format)
         raw_lines = content.splitlines()
 
         # Strip trailing blank lines (editors often add them)
@@ -97,7 +91,6 @@ def parse_stamp_file(uploaded_file, age_groups: List[str]) -> Tuple[List[str], L
         # Take exactly as many lines as age groups
         lines = raw_lines[:len(age_groups)]
 
-        # Initialize outputs
         counts = []
         used_groups = []
         df_data = []
@@ -142,11 +135,10 @@ def clean_gene_names(gene_list: List[str]) -> List[str]:
     cleaned_genes = []
     
     for gene in gene_list:
-        if gene:  # Skip empty strings
+        if gene:  
             # Remove common prefixes/suffixes and clean
             cleaned = gene.strip().upper()
             
-            # Remove common non-gene characters
             cleaned = re.sub(r'[^\w\-\.]', '', cleaned)
             
             # Skip if too short (likely not a real gene name)
@@ -218,7 +210,7 @@ def validate_stamp_format(file_content: str, expected_age_groups: int = 5) -> Di
         )
         return result
 
-    # ── Reject CSV / TSV / JSON / header-like files ──────────────────
+    # Reject CSV / TSV / JSON / header-like files
     # Find first non-blank line for format detection
     first_content_line = ''
     for l in lines:
@@ -246,7 +238,7 @@ def validate_stamp_format(file_content: str, expected_age_groups: int = 5) -> Di
             result['errors'].append("File appears to be JSON, not STAMP format.")
             return result
 
-    # ── Per-line validation ──────────────────────────────────────────
+    # Per-line validation
     all_genes: set = set()
     for idx, line in enumerate(lines):
         stripped = line.strip()
@@ -289,16 +281,14 @@ def validate_stamp_format(file_content: str, expected_age_groups: int = 5) -> Di
     return result
 
 def parse_multiple_stamp_files(uploaded_files, age_groups: List[str]) -> Dict[str, Dict]:
-    """
-    Parse multiple STAMP files and return structured data with CLEAN tissue names
+    """Parse multiple STAMP files and return structured data with cleaned tissue names
     
     Args:
         uploaded_files: List of Streamlit uploaded file objects
         age_groups: List of age group labels
         
     Returns:
-        Dictionary with tissue data and metadata
-    """
+        Dictionary with tissue data and metadata"""
     parsed_data = {}
     parsing_summary = {
         'total_files': len(uploaded_files) if uploaded_files else 0,
@@ -316,7 +306,7 @@ def parse_multiple_stamp_files(uploaded_files, age_groups: List[str]) -> Dict[st
     
     for file_obj in uploaded_files:
         try:
-            # Extract CLEAN tissue name from filename
+            # Use a cleaned tissue label as the dataset key.
             original_filename = file_obj.name
             clean_tissue_name = extract_tissue_name(original_filename)
             
@@ -327,7 +317,7 @@ def parse_multiple_stamp_files(uploaded_files, age_groups: List[str]) -> Dict[st
                 final_tissue_name = f"{clean_tissue_name} ({counter})"
                 counter += 1
             
-            # Parse file (includes strict validation now)
+            # Parse and validate the five-line format.
             used_groups, counts, df = parse_stamp_file(file_obj, age_groups)
             
             # Check if validation failed (empty df with _validation attr)
@@ -341,14 +331,13 @@ def parse_multiple_stamp_files(uploaded_files, age_groups: List[str]) -> Dict[st
                 continue
 
             if not df.empty:
-                # Convert to gene sets format
                 gene_sets = []
                 for age in age_groups:
                     age_genes = set(df[df["Age"] == age]["Gene"].tolist())
                     gene_sets.append(age_genes)
                     all_genes.update(age_genes)
                 
-                # Store with CLEAN name as key
+                # Store under the cleaned tissue label.
                 parsed_data[final_tissue_name] = {
                     'gene_sets': gene_sets,
                     'dataframe': df,
@@ -409,16 +398,14 @@ def export_to_stamp_format(data: Dict[str, List[set]], age_groups: List[str]) ->
     return '\n'.join(output_lines)
 
 def create_gene_summary_table(data: Dict[str, List[set]], age_groups: List[str]) -> pd.DataFrame:
-    """
-    Create a summary table of gene counts across tissues and age groups
+    """Create a summary table of gene counts across tissues and age groups
     
     Args:
-        data: Dictionary with CLEAN tissue names and gene sets
+        data: Dictionary with cleaned tissue names and gene sets
         age_groups: List of age group labels
         
     Returns:
-        DataFrame with gene count summary
-    """
+        DataFrame with gene count summary"""
     summary_data = []
     
     for tissue, gene_sets in data.items():
@@ -466,7 +453,6 @@ def detect_file_format(file_content: str) -> Dict[str, Union[str, bool, List[str
     if not lines:
         return detection_result
     
-    # Analyze first few lines
     sample_lines = lines[:5]
     
     # Check for common delimiters
@@ -483,7 +469,6 @@ def detect_file_format(file_content: str) -> Dict[str, Union[str, bool, List[str
         
         delimiter_scores[delimiter] = sum(scores) / len(scores) if scores else 0
     
-    # Choose best delimiter
     best_delimiter = max(delimiter_scores.items(), key=lambda x: x[1])
     detection_result['delimiter'] = 'space' if best_delimiter[0] == ' ' else best_delimiter[0]
     
@@ -494,14 +479,13 @@ def detect_file_format(file_content: str) -> Dict[str, Union[str, bool, List[str
         detection_result['format_type'] = 'stamp'
         detection_result['confidence'] = 0.8
     
-    # Extract sample genes
     for line in sample_lines[:3]:
         if line.strip():
             parts = line.split(best_delimiter[0])
             gene_like_parts = [p.strip() for p in parts if p.strip() and is_gene_like(p.strip())]
             detection_result['sample_genes'].extend(gene_like_parts[:3])
     
-    detection_result['sample_genes'] = detection_result['sample_genes'][:10]  # Limit sample size
+    detection_result['sample_genes'] = detection_result['sample_genes'][:10]  
     
     return detection_result
 
@@ -518,12 +502,11 @@ def is_gene_like(text: str) -> bool:
     if not text or len(text) < 2:
         return False
     
-    # Basic patterns for gene names
     # Most gene names are 2-20 characters, alphanumeric with some special chars
     if not re.match(r'^[A-Za-z0-9\-\.\_]+$', text):
         return False
     
-    # Exclude obvious non-genes (check against ORIGINAL casing)
+    # Check the input casing before excluding non-gene tokens.
     non_gene_patterns = [
         (r'^\d+$', text),        # Pure numbers
         (r'^[a-z]+$', text),     # All lowercase on original text (headers, words)
@@ -538,24 +521,17 @@ def is_gene_like(text: str) -> bool:
     return True
 
 def merge_duplicate_genes(gene_sets: List[set]) -> List[set]:
-    """
-    Merge potential duplicate genes with slight name variations
+    """Strip whitespace and merge case variants within each gene set.
     
-    Args:
-        gene_sets: List of gene sets to clean
-        
-    Returns:
-        List of cleaned gene sets
+    This does not resolve aliases or check symbols against a gene database.
     """
-    # This is a placeholder for more sophisticated gene name normalization
-    # In practice, you might want to use external gene name databases
+    # Case normalization only; no alias lookup or database validation.
     
     cleaned_sets = []
     
     for gene_set in gene_sets:
         cleaned_set = set()
         for gene in gene_set:
-            # Basic cleaning
             normalized_gene = gene.upper().strip()
             cleaned_set.add(normalized_gene)
         cleaned_sets.append(cleaned_set)
@@ -563,24 +539,11 @@ def merge_duplicate_genes(gene_sets: List[set]) -> List[set]:
     return cleaned_sets
 
 def batch_clean_tissue_names(filenames: List[str]) -> Dict[str, str]:
-    """
-    Pulisce una lista di nomi file in batch
-    
-    Args:
-        filenames: Lista di nomi file da pulire
-        
-    Returns:
-        Dizionario {filename_originale: nome_pulito}
-    """
+    """Return a mapping from each filename to its cleaned tissue label."""
     return {filename: extract_tissue_name(filename) for filename in filenames}
 
 def create_tissue_summary() -> Dict:
-    """
-    Crea un summary delle mappature disponibili
-    
-    Returns:
-        Dizionario con statistiche delle mappature
-    """
+    """Return tissue counts and categories from the shared mapping."""
     return {
         "cleaning_method": "Direct string replacement",
         "removes_extensions": [".txt", ".csv", ".tsv"],

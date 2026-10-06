@@ -136,7 +136,6 @@ def compute_linkage(matrix, method='average'):
         # Convert to condensed form
         condensed = squareform(dist_matrix)
         
-        # Perform hierarchical clustering
         return linkage(condensed, method=method)
         
     except Exception as e:
@@ -226,7 +225,6 @@ def compute_diversity_metrics(gene_sets):
     if not total_appearances:
         return {'shannon_diversity': 0, 'simpson_diversity': 0, 'total_unique_genes': 0}
     
-    # Calculate Shannon diversity
     total_genes = sum(total_appearances.values())
     shannon = 0
     simpson = 0
@@ -262,7 +260,6 @@ def compute_gene_frequency_analysis(data, min_frequency=1):
     tissue_gene_frequency = {}
     age_gene_frequency = {}
     
-    # Count gene appearances
     for tissue, age_sets in data.items():
         tissue_gene_frequency[tissue] = {}
         
@@ -279,10 +276,8 @@ def compute_gene_frequency_analysis(data, min_frequency=1):
                     age_gene_frequency[age_idx] = {}
                 age_gene_frequency[age_idx][gene] = age_gene_frequency[age_idx].get(gene, 0) + 1
     
-    # Filter by minimum frequency
     frequent_genes = {gene: freq for gene, freq in gene_frequency.items() if freq >= min_frequency}
     
-    # Sort by frequency
     sorted_genes = sorted(frequent_genes.items(), key=lambda x: x[1], reverse=True)
     
     return {
@@ -355,7 +350,6 @@ def compute_age_progression_analysis(data):
         
         tissue_results['cumulative_genes'] = cumulative
         
-        # Calculate trends
         counts = tissue_results['age_gene_counts']
         if len(counts) > 1:
             # Linear trend (slope)
@@ -430,7 +424,7 @@ def compute_core_genes(tissue_groups, min_tissues=None):
         tissue_names = [f"Tissue_{i}" for i in range(len(tissue_groups))]
     
     if min_tissues is None:
-        min_tissues = len(tissue_gene_sets) // 2  # Default to half
+        min_tissues = len(tissue_gene_sets) // 2  # Use half the tissue count as the default.
     
     # Count gene appearances across tissues
     gene_counts = {}
@@ -475,7 +469,6 @@ def compute_enrichment_analysis(target_genes, background_genes, gene_sets, label
     for i, gene_set in enumerate(gene_sets):
         label = labels[i] if i < len(labels) else f"Set_{i}"
         
-        # Calculate enrichment
         overlap = len(target_genes & gene_set)
         target_size = len(target_genes)
         set_size = len(gene_set)
@@ -502,7 +495,6 @@ def compute_enrichment_analysis(target_genes, background_genes, gene_sets, label
             'enrichment_score': -np.log10(p_value) if p_value > 0 else 0
         })
     
-    # Sort by significance
     results.sort(key=lambda x: x['p_value'])
     
     return results

@@ -4,13 +4,10 @@ import numpy as np
 
 def apply_plot_style():
     """Apply consistent styling to all plots"""
-    # Set the style
     plt.style.use('seaborn-v0_8-whitegrid')
     
-    # Set color palette
     sns.set_palette("husl")
     
-    # Configure matplotlib parameters
     plt.rcParams.update({
         'figure.facecolor': 'white',
         'axes.facecolor': 'white',

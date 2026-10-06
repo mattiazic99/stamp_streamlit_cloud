@@ -1,16 +1,9 @@
-"""Integration checks on the generated complete-age-bins outputs.
+"""Check the bundled complete-age-bin atlas and Jaccard matrices.
 
-These tests read the pre-computed CSV/sets outputs directly (pandas only, no
-Streamlit) and verify the complete-mode artifacts are well-formed:
-
-  * the complete Jaccard matrices are square and exclude incomplete tissues;
-  * v8 has 49 complete tissues, v10 has 50;
-  * the like-for-like v8-vs-v10 comparison set is 49 tissues;
-  * complete Jaccard values equal the all-tissues matrix sliced to the
-    complete tissues (per-pair Jaccard is independent of the tissue set).
-
-If the complete outputs have not been generated yet (output/{version}_complete
-missing), the tests are skipped.
+Matrices must be square and exclude incomplete tissues: 49 tissues for v8,
+50 for v10, and 49 in their intersection. Pairwise Jaccard scores must match
+the corresponding slice of all-tissues results when those files are available.
+Tests skip any comparison whose required output files are missing.
 """
 from __future__ import annotations
 
@@ -23,7 +16,7 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT = ROOT / "output"
 
-# Incomplete tissues (filesystem-safe names) expected to be excluded.
+# Incomplete tissues must be absent from the complete-mode atlas.
 INCOMPLETE_SAFE = {
     "v8": {"Bladder", "Cervix_Ectocervix", "Cervix_Endocervix",
            "Fallopian_Tube", "Kidney_Medulla"},
@@ -59,7 +52,7 @@ def test_comparison_set_is_49_common_tissues():
     m10 = _complete_jaccard("v10")
     common = set(m8.index) & set(m10.index)
     assert len(common) == 49
-    # Bladder is complete in v10 but not v8, so it is NOT in the comparison set.
+    # Bladder has complete coverage only in v10, so it is absent from the intersection.
     assert "Bladder" not in common
 
 

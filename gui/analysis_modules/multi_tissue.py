@@ -5,11 +5,10 @@ import plotly.graph_objects as go
 import plotly.express as px
 import plotly.figure_factory as ff
 from utils.analysis import compute_jaccard_matrix, compute_linkage, compute_common_genes_matrix, compute_percent_overlap_matrix
-from utils.parsing import parse_multiple_stamp_files, extract_tissue_name  # AGGIUNTO IMPORT
+from utils.parsing import parse_multiple_stamp_files, extract_tissue_name
 from components.downloads import create_csv_download, display_download_section
 
-
-# ── Plotly chart config ──
+# Plotly toolbar options.
 def _plotly_cfg(filename="chart"):
     return {
         "toImageButtonOptions": {"format": "png", "scale": 2, "filename": filename.replace(".png", "")},
@@ -17,10 +16,10 @@ def _plotly_cfg(filename="chart"):
     }
 
 def _download_plotly_as_png(plotly_fig, filename):
-    """Render a working Download PNG button using Plotly.js from CDN."""
+    """Offer a PNG download through Plotly.js loaded from its CDN."""
     import streamlit.components.v1 as _components
     safe_name = filename.replace(".png", "").replace("'", r"\'")
-    fig_json = plotly_fig.to_json().replace("</", r"<\/")   # prevent HTML injection
+    fig_json = plotly_fig.to_json().replace("</", r"<\/")   # Escape labels before inserting them into HTML.
     html = (
         '<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>'
         '<div id="hc" style="position:absolute;left:-9999px;width:1200px;height:600px;"></div>'
@@ -45,8 +44,7 @@ def _download_plotly_as_png(plotly_fig, filename):
     )
     _components.html(html, height=50)
 
-
-# ── helper: Plotly heatmap (tissue × tissue, optional triangular mask) ──
+# Tissue heatmap with an optional triangular mask.
 def _interactive_heatmap_tissue(matrix, labels, title, colorbar_label,
                                  cmap="YlGnBu", mask_upper=True,
                                  fmt="float", key=None, center=None):
@@ -103,24 +101,6 @@ def _interactive_heatmap_tissue(matrix, labels, title, colorbar_label,
     _download_plotly_as_png(fig, f"{title.replace(' ', '_')[:60]}.png")
 
 
-def _precomputed_jaccard_submatrix(version, tissues_display, metric, complete=False):
-    """Canonical Jaccard sub-matrix from output/{version}[_complete]/jaccard/.
-
-    Returns a numpy matrix for the given tissues (display names) in the given
-    order, or None if any tissue is missing from the matrix or on any error
-    (caller then falls back to the local computation).
-    """
-    try:
-        from data_loader import get_jaccard_matrix, display_to_safe
-        m = get_jaccard_matrix(version, metric, complete)
-        safe = [display_to_safe(t) for t in tissues_display]
-        if not all(s in m.index and s in m.columns for s in safe):
-            return None
-        return m.loc[safe, safe].to_numpy(dtype=float)
-    except Exception:
-        return None
-
-
 def show():
     """Multi-Tissue Analysis Page"""
     
@@ -129,132 +109,66 @@ def show():
     
     age_groups = ["30–39", "40–49", "50–59", "60–69", "70–79"]
 
-    # Track pre-computed (GTEx) mode so we can read the canonical Jaccard
-    # matrices instead of recomputing them client-side.
-    preloaded = False
-    version = None
+    st.markdown("""
+    <div class="analysis-section">
+        <h3>📂 Upload Multiple Tissue Files</h3>
+        <p>Upload at least 3 tissue files for comprehensive multi-tissue analysis</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # ── Data source toggle ─────────────────────────────────────────
-    import sys as _sys
-    from pathlib import Path as _Path
-    _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
-    from data_loader import get_available_tissues, get_sets_for_tissue, sets_to_gui_format, sets_to_gene_sets, complete_mode
+    uploaded_files = st.file_uploader(
+        "📂 Upload STAMP .txt files", 
+        type=["txt"],
+        accept_multiple_files=True, 
+        key="multi_tissue_files",
+        help="Upload multiple tissue gene switching files for comparison"
+    )
 
-    # Pre-loaded (GTEx) mode removed by design: users always upload their files.
-    data_source = "📂 Upload files"
-
-    complete = complete_mode()
-
-    if data_source == "📦 Pre-loaded (GTEx)":
-        preloaded = True
-        version = st.session_state.get("gtex_version", "v10")
-        all_tissues = get_available_tissues(version, complete)
-
-        st.markdown(f"""
-        <div class="analysis-section">
-            <h3>🧪 Select Tissues — GTEx {version}</h3>
-            <p>Select at least 3 tissues for comprehensive multi-tissue analysis</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        selected_tissues = st.multiselect(
-            "Select tissues:",
-            all_tissues,
-            default=all_tissues[:5],
-            key="mt_tissues",
-        )
-
-        if not selected_tissues or len(selected_tissues) < 2:
-            st.info("👆 Please select at least 2 tissues for multi-tissue analysis.")
-            return
-
-        # Build the same data dict as parse_multiple_stamp_files
-        data = {}
-        for tissue in selected_tissues:
-            sets_dict = get_sets_for_tissue(version, tissue, complete)
-            _, counts, df = sets_to_gui_format(sets_dict)
-            gene_sets_list = sets_to_gene_sets(sets_dict)
-            data[tissue] = {
-                'gene_sets': gene_sets_list,
-                'dataframe': df,
-                'counts': counts,
-                'total_genes': sum(len(s) for s in gene_sets_list),
-                'original_filename': f"{tissue}.txt",
-                'clean_name': tissue,
-            }
-        summary = {
-            'total_files': len(selected_tissues),
-            'successful_parses': len(selected_tissues),
-            'failed_parses': 0,
-            'total_unique_genes': len(set().union(*(set().union(*d['gene_sets']) for d in data.values()))),
-            'tissue_names': list(data.keys()),
-            'rejected_files': [],
-        }
-        st.success(f"✅ {len(selected_tissues)} tissues loaded from GTEx {version}!")
-
-    else:
-        # Original upload mode
-        st.markdown("""
-        <div class="analysis-section">
-            <h3>📂 Upload Multiple Tissue Files</h3>
-            <p>Upload at least 3 tissue files for comprehensive multi-tissue analysis</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        uploaded_files = st.file_uploader(
-            "📂 Upload STAMP .txt files", 
-            type=["txt"],
-            accept_multiple_files=True, 
-            key="multi_tissue_files",
-            help="Upload multiple tissue gene switching files for comparison"
-        )
-
-        if not uploaded_files or len(uploaded_files) < 2:
-            st.info("👆 Please upload at least 2 tissue files for multi-tissue analysis.")
+    if not uploaded_files or len(uploaded_files) < 2:
+        st.info("👆 Please upload at least 2 tissue files for multi-tissue analysis.")
             
-            st.markdown("### 📋 Analysis Features")
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown("""
-                **🔍 Similarity Analysis:**
-                - Jaccard similarity matrices
-                - Age-averaged comparisons
-                - Lifetime gene overlap
-                - Correlation heatmaps
-                """)
-            with col2:
-                st.markdown("""
-                **🌳 Clustering Analysis:**
-                - Hierarchical clustering
-                - Dendrogram visualization
-                - Distance matrices
-                - Tissue grouping
-                """)
-            return
+        st.markdown("### 📋 Analysis Features")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("""
+            **🔍 Similarity Analysis:**
+            - Jaccard similarity matrices
+            - Age-averaged comparisons
+            - Lifetime gene overlap
+            - Correlation heatmaps
+            """)
+        with col2:
+            st.markdown("""
+            **🌳 Clustering Analysis:**
+            - Hierarchical clustering
+            - Dendrogram visualization
+            - Distance matrices
+            - Tissue grouping
+            """)
+        return
 
-        st.success(f"✅ {len(uploaded_files)} tissue files loaded successfully!")
+    st.success(f"✅ {len(uploaded_files)} tissue files loaded successfully!")
 
-        # Parse all files
-        result = parse_multiple_stamp_files(uploaded_files, age_groups)
-        # ── Show rejected files (STAMP validation errors) ──────────────
-        _rejected = result['summary'].get('rejected_files', [])
-        if _rejected:
-            for _rej in _rejected:
-                st.error(
-                    f"❌ **{_rej['filename']}** is not a valid STAMP file:\n\n"
-                    + "\n".join(f"- {e}" for e in _rej.get('errors', []))
-                )
-            st.info(
-                "ℹ️ **STAMP format**: each file must have exactly **5 lines** "
-                "(one per age group), with **space-separated gene names** on each line."
+    # Parse all files
+    result = parse_multiple_stamp_files(uploaded_files, age_groups)
+    # Report files rejected by format validation.
+    _rejected = result['summary'].get('rejected_files', [])
+    if _rejected:
+        for _rej in _rejected:
+            st.error(
+                f"❌ **{_rej['filename']}** is not a valid STAMP file:\n\n"
+                + "\n".join(f"- {e}" for e in _rej.get('errors', []))
             )
+        st.info(
+            "ℹ️ **STAMP format**: each file must have exactly **5 lines** "
+            "(one per age group), with **space-separated gene names** on each line."
+        )
 
-        data = result['data']
-        summary = result['summary']
+    data = result['data']
+    summary = result['summary']
     
     tissues = list(data.keys())
     
-    # Analysis options
     st.markdown("### ⚙️ Analysis Options")
     col1, col2 = st.columns(2)
     
@@ -269,7 +183,7 @@ def show():
         color_palette = st.selectbox("🎨 Color Palette", 
                                    ["rdbu", "viridis", "rdylbu", "plasma"])
     
-    # === TISSUE OVERVIEW ===
+    # Tissue overview
     st.markdown("""
     <div class="analysis-section">
         <h2>📊 Tissue Overview</h2>
@@ -331,34 +245,17 @@ def show():
     st.plotly_chart(bar_fig, use_container_width=True, key="mt_bar_overview", config=_plotly_cfg())
     _download_plotly_as_png(bar_fig, "tissue_overview.png")
     
-    # === SIMILARITY MATRICES ===
+    # Similarity matrices
     st.markdown("""
     <div class="analysis-section">
         <h2>📊 Similarity Analysis</h2>
     </div>
     """, unsafe_allow_html=True)
     
-    # Jaccard similarity matrices: in pre-loaded mode read the canonical
-    # pre-computed matrices (output/{version}/jaccard/jaccard_{age,life}.csv),
-    # the same ones used by the paper and the v8-vs-v10 page. Fall back to the
-    # local computation in upload mode (or if a tissue is missing in the matrix).
-    tissues_sorted = list(data_for_analysis.keys())
-    matrix_age = matrix_life = None
-    jaccard_precomputed = False
-    if preloaded:
-        _ma = _precomputed_jaccard_submatrix(version, tissues_sorted, "age", complete)
-        _ml = _precomputed_jaccard_submatrix(version, tissues_sorted, "life", complete)
-        if _ma is not None and _ml is not None:
-            matrix_age, matrix_life, jaccard_precomputed = _ma, _ml, True
-    if not jaccard_precomputed:
-        matrix_age, tissues_sorted = compute_jaccard_matrix(data_for_analysis, mode="age")
-        matrix_life, _ = compute_jaccard_matrix(data_for_analysis, mode="life")
-
-    if jaccard_precomputed:
-        st.caption(
-            f"Jaccard matrices read from pre-computed `output/{version}/jaccard/` "
-            "— identical to the v8-vs-v10 page and the paper.",
-        )
+    # Jaccard similarity matrices, computed on the uploaded gene sets with the
+    # same rule used by the backend to build output/{version}/jaccard/.
+    matrix_age, tissues_sorted = compute_jaccard_matrix(data_for_analysis, mode="age")
+    matrix_life, _ = compute_jaccard_matrix(data_for_analysis, mode="life")
 
     # Age-averaged similarity heatmap (Plotly)
     st.markdown("### 📊 Average Similarity Across Age Groups")
@@ -378,7 +275,7 @@ def show():
         fmt="float", key="mt_hm_life"
     )
     
-    # === HIERARCHICAL CLUSTERING (Plotly dendrograms) ===
+    # HIERARCHICAL CLUSTERING (Plotly dendrograms)
     if show_dendrograms:
         st.markdown("""
         <div class="analysis-section">
@@ -429,7 +326,7 @@ def show():
             st.plotly_chart(dendro_life, use_container_width=True, key='mt_dendro_life', config=_plotly_cfg())
             _download_plotly_as_png(dendro_life, 'dendrogram_lifetime_based.png')
     
-    # === SHARED GENES ANALYSIS ===
+    # Shared genes analysis
     st.markdown("""
     <div class="analysis-section">
         <h2>🤝 Shared Genes Analysis</h2>
@@ -456,7 +353,7 @@ def show():
             fmt="float", key="mt_hm_pct"
         )
     
-    # === TISSUE RANKING ===
+    # Tissue ranking
     st.markdown("""
     <div class="analysis-section">
         <h2>🏆 Tissue Similarity Ranking</h2>
@@ -509,7 +406,7 @@ def show():
         create_csv_download(ranking_df, f"similarity_ranking_{ref_tissue}.csv", 
                            "⬇️ Download Ranking CSV")
     
-    # === DOWNLOAD SECTION ===
+    # Download section
     display_download_section("📥 Download Analysis Results")
     
     col1, col2, col3 = st.columns(3)
@@ -554,7 +451,7 @@ def show():
         create_csv_download(summary_df, "analysis_summary.csv", 
                            "⬇️ Analysis Summary CSV")
     
-    # === ADVANCED ANALYSIS ===
+    # Advanced analysis
     if st.checkbox("🔬 Show Advanced Analysis", value=False):
         st.markdown("""
         <div class="analysis-section">

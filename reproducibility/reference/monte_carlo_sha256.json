@@ -1,0 +1,536 @@
+{
+  "paper/02_primary/null_counts/Adipose_Subcutaneous.npz": {
+    "null_counts": "8682907d4d81e6faaebdc572f558123605c899f3dfff0b4a7074dc7d1fb8bf1a"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Adipose_Subcutaneous.npz": {
+    "bootstrap_counts": "d7a54ab5d5a905e90d9ede25e45f2def9e7d517825574773239b6bf35051bcac"
+  },
+  "paper/02_primary/null_counts/Adipose_Visceral_Omentum.npz": {
+    "null_counts": "3163f3b1f8d9e6c45ad37c7c98166a673d7005ff28019db7f6d068dad4068aa6"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Adipose_Visceral_Omentum.npz": {
+    "bootstrap_counts": "394349314f5c5e85615a534c46fffc0d3704b3b69d56479db112ebc0713d866b"
+  },
+  "paper/02_primary/null_counts/Adrenal_Gland.npz": {
+    "null_counts": "75e7adfaa8b52c2338b9a0126250a225f917600645cccf923677e260a5340772"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Adrenal_Gland.npz": {
+    "bootstrap_counts": "e0b70597a4a4eedf43d3a77e434fbf6bc998041d1a5b5c01f9fa2eeb7c4ba3c2"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Adrenal_Gland.npz": {
+    "null_counts": "dc379fd3e59a35ef9ba8ab3cac19036c5869eea3a76c80e4be4b8be7eb76376d"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Adrenal_Gland.npz": {
+    "null_counts": "65e065f3c7b3c64e21b015edeac7da8a560831f0d481cc96a1b8c7604daf8670"
+  },
+  "paper/02_primary/null_counts/Artery_Aorta.npz": {
+    "null_counts": "fa703df77719e213f9378b2333e939b4dfaddb021e207c5de27ddcd74986352d"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Artery_Aorta.npz": {
+    "bootstrap_counts": "1ab544892aa2ca163bd286919f0d2cc18f198f461d0f706610c8b3a877afa476"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Artery_Aorta.npz": {
+    "null_counts": "165ac470c3440c6cc0b13c3fc7ee1eaa723adff8ff83a6269bb3c78a4f5b82c0"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Artery_Aorta.npz": {
+    "null_counts": "cbfbfc85a41c69448442a99aae0726f57a76454932ae466291c75cb695815bf6"
+  },
+  "paper/02_primary/null_counts/Artery_Coronary.npz": {
+    "null_counts": "706fdc0f85a750e3f0e482b2e0fe0fefe7cbba7276b435854417e0b296ad3de1"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Artery_Coronary.npz": {
+    "bootstrap_counts": "7cbb290dcd54c4708e8ad3b9bd1a7a9ca349a18cf0810202f2d3bbe805e22079"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Artery_Coronary.npz": {
+    "null_counts": "94ac604b34efe16c66acbe0a9c6bc6ea54ab1e055266183815f1e6f8a6c56fa6"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Artery_Coronary.npz": {
+    "null_counts": "94ac604b34efe16c66acbe0a9c6bc6ea54ab1e055266183815f1e6f8a6c56fa6"
+  },
+  "paper/02_primary/null_counts/Artery_Tibial.npz": {
+    "null_counts": "190e62e87e2df07aceef02d43df5cc28f019c5e8bc835f6bb41f6167d51099f0"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Artery_Tibial.npz": {
+    "bootstrap_counts": "95215a087a2cb833ca7c410d45fac6c673071ab0e45b3277df3edac6e2eced6f"
+  },
+  "paper/02_primary/null_counts/Bladder.npz": {
+    "null_counts": "977ae622929b06b40cf65264faa2d85d6c64c3c9bdbe1f7d5c4be7bb067cb8c0"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Bladder.npz": {
+    "bootstrap_counts": "506b0ad99e7180af14fd8424ed5795394f71fdfb6e8f601bc51bfafb558888f0"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Bladder.npz": {
+    "null_counts": "3615a8155c9bb85b42706e502820e792ec1b9c7db08bcf50254d57ee134a14bb"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Bladder.npz": {
+    "null_counts": "3615a8155c9bb85b42706e502820e792ec1b9c7db08bcf50254d57ee134a14bb"
+  },
+  "paper/02_primary/null_counts/Brain_Amygdala.npz": {
+    "null_counts": "a4a8a266bf78409ea7471ce77b9a59cd7dfe9e08b9e69b12359a324ab4b1261f"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Brain_Amygdala.npz": {
+    "bootstrap_counts": "2d18a9474b5570a4900d64b92fc02206c774efd2c487a53223592d7fd2601b69"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Brain_Amygdala.npz": {
+    "null_counts": "3af04540a5bf7b34ae1e538b9c9a26be806e3ad6a6b2c5f1f761379588de9c8a"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Brain_Amygdala.npz": {
+    "null_counts": "3af04540a5bf7b34ae1e538b9c9a26be806e3ad6a6b2c5f1f761379588de9c8a"
+  },
+  "paper/02_primary/null_counts/Brain_Anterior_cingulate_cortex_BA24.npz": {
+    "null_counts": "bff38682730acd4cac840e35edeffd00f17f0f72d3d4db7ec9deef156b7530e5"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Brain_Anterior_cingulate_cortex_BA24.npz": {
+    "bootstrap_counts": "aa580c140f02fb0014c33780b2a2fba4208c2269839a34f4c531b667d3453aa1"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Brain_Anterior_cingulate_cortex_BA24.npz": {
+    "null_counts": "968b0ad8513bfee7a1796997a135b5a2efe8b1e177d736c09dca05ac269e90ac"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Brain_Anterior_cingulate_cortex_BA24.npz": {
+    "null_counts": "968b0ad8513bfee7a1796997a135b5a2efe8b1e177d736c09dca05ac269e90ac"
+  },
+  "paper/02_primary/null_counts/Brain_Caudate_basal_ganglia.npz": {
+    "null_counts": "3539c9d690336be621cfd5fda3b0dadc24bc5823ad40a0c69ddc3ea39d3dff58"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Brain_Caudate_basal_ganglia.npz": {
+    "bootstrap_counts": "a2ea5d0bd56aa5248f1add04bc22f3fa4bae5bb488db85410f21ed8d0ee7461f"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Brain_Caudate_basal_ganglia.npz": {
+    "null_counts": "263a08c192ea09341c0bda77a649d79d82e704300cb49b6a78fb534b05072a7b"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Brain_Caudate_basal_ganglia.npz": {
+    "null_counts": "263a08c192ea09341c0bda77a649d79d82e704300cb49b6a78fb534b05072a7b"
+  },
+  "paper/02_primary/null_counts/Brain_Cerebellar_Hemisphere.npz": {
+    "null_counts": "63b54231899b5a7f7fcccbdb2dc5896b5ff6ab75206e09e96cf2c7ffb0dd9287"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Brain_Cerebellar_Hemisphere.npz": {
+    "bootstrap_counts": "d25f29a5372a255d4487c8ccc1ed0e42f7c9a959993e36a1898b30244dec1501"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Brain_Cerebellar_Hemisphere.npz": {
+    "null_counts": "ab17169a01c6c10290958bc051a55608f7f58e0cf448fdbf1577f5b7ca443328"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Brain_Cerebellar_Hemisphere.npz": {
+    "null_counts": "ab17169a01c6c10290958bc051a55608f7f58e0cf448fdbf1577f5b7ca443328"
+  },
+  "paper/02_primary/null_counts/Brain_Cerebellum.npz": {
+    "null_counts": "24597b5f08978c1cd1515919022699772ac0c3b03683ac1a05fe10269611c2d7"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Brain_Cerebellum.npz": {
+    "bootstrap_counts": "2ec9c4f4c82282503526aabc3a2d9ceef42647ed03b673d3c7e156f1ee43e87e"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Brain_Cerebellum.npz": {
+    "null_counts": "0e2776e7ff58f4981c0f4a4b1b1e91872747243f79ddbffcc75e61a2e3ed5ea8"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Brain_Cerebellum.npz": {
+    "null_counts": "0e2776e7ff58f4981c0f4a4b1b1e91872747243f79ddbffcc75e61a2e3ed5ea8"
+  },
+  "paper/02_primary/null_counts/Brain_Cortex.npz": {
+    "null_counts": "fa3d4e390a17c3b346a0ba036ae27e0dad7136dcef4124852ebaf23f925ba9c7"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Brain_Cortex.npz": {
+    "bootstrap_counts": "3b907ebe3c69d08eb1aa49a620b75af7a503b8744028d8a579bc2b7aad0b0c35"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Brain_Cortex.npz": {
+    "null_counts": "4253d39f5a8ff48d4044b7dfa827892b40b3af4391346e263bca9b1ddb05d34b"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Brain_Cortex.npz": {
+    "null_counts": "4253d39f5a8ff48d4044b7dfa827892b40b3af4391346e263bca9b1ddb05d34b"
+  },
+  "paper/02_primary/null_counts/Brain_Frontal_Cortex_BA9.npz": {
+    "null_counts": "867e01aa527198e5de6dc6e649d8f7668942a36df5071297c4473f00de4fc8ce"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Brain_Frontal_Cortex_BA9.npz": {
+    "bootstrap_counts": "1383e22574d9f0c61f7913016b114fc283f30e4ff73babec2ee7d6dc0049bde0"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Brain_Frontal_Cortex_BA9.npz": {
+    "null_counts": "537577da4364133332e5f41de23cc4951753d1aa4345b86d73bc356a0f17e988"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Brain_Frontal_Cortex_BA9.npz": {
+    "null_counts": "537577da4364133332e5f41de23cc4951753d1aa4345b86d73bc356a0f17e988"
+  },
+  "paper/02_primary/null_counts/Brain_Hippocampus.npz": {
+    "null_counts": "a8a11ab5dad60ea96b3d8ec508fd5a9708c5d7c7a3ccd82dbe1e9110722ead4d"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Brain_Hippocampus.npz": {
+    "bootstrap_counts": "4214d05404083c1fa034dc797c3aebd5dc988275df034d890a5227fac5b37948"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Brain_Hippocampus.npz": {
+    "null_counts": "de0d093c7e7ac678435d994c39bed753c9392bfee09719aeee0949c28ca1cfa2"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Brain_Hippocampus.npz": {
+    "null_counts": "de0d093c7e7ac678435d994c39bed753c9392bfee09719aeee0949c28ca1cfa2"
+  },
+  "paper/02_primary/null_counts/Brain_Hypothalamus.npz": {
+    "null_counts": "9fc2742d33f3a5aaaa18e6b8117064349a3f0b8aafda950f39713d902ca7446e"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Brain_Hypothalamus.npz": {
+    "bootstrap_counts": "04ff8444d2a4be0edebcdd01155e7c36bd72a1e1fac78b2e742032d568b1c1d4"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Brain_Hypothalamus.npz": {
+    "null_counts": "bbd3b27633976211a4295fd25ca0d7b431abe763f8625d4173ce62fb6923f23a"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Brain_Hypothalamus.npz": {
+    "null_counts": "bbd3b27633976211a4295fd25ca0d7b431abe763f8625d4173ce62fb6923f23a"
+  },
+  "paper/02_primary/null_counts/Brain_Nucleus_accumbens_basal_ganglia.npz": {
+    "null_counts": "ded4e6f127f590d84ae6a2eae86f2ef80c156521c2647c5fd3631c077809427b"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Brain_Nucleus_accumbens_basal_ganglia.npz": {
+    "bootstrap_counts": "77ede065681b37cef69215c82bf3ad017abc9a948872bc53f4536d1fe7c0ed38"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Brain_Nucleus_accumbens_basal_ganglia.npz": {
+    "null_counts": "9019bd525381cee82f64881429a685a166852e3fbffaf2a009878c6267c350d2"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Brain_Nucleus_accumbens_basal_ganglia.npz": {
+    "null_counts": "9019bd525381cee82f64881429a685a166852e3fbffaf2a009878c6267c350d2"
+  },
+  "paper/02_primary/null_counts/Brain_Putamen_basal_ganglia.npz": {
+    "null_counts": "d395145e079c0b481fdbae64182a4d56204e533e04f73314559f5c3f56996eae"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Brain_Putamen_basal_ganglia.npz": {
+    "bootstrap_counts": "f40adb908037ee958d43fa610c4751b039083c272b28a28fb0d1e59ca2a6788c"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Brain_Putamen_basal_ganglia.npz": {
+    "null_counts": "bc0446bf6bf8902162bac81282c1bb467c59436e5d0dd09b3d0bb8c55c32d253"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Brain_Putamen_basal_ganglia.npz": {
+    "null_counts": "bc0446bf6bf8902162bac81282c1bb467c59436e5d0dd09b3d0bb8c55c32d253"
+  },
+  "paper/02_primary/null_counts/Brain_Spinal_cord_cervical_c_1.npz": {
+    "null_counts": "491ece2d4311dffd60b01e8194c029b090e0f8aafe6ba88bba06a6d24df0b3c6"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Brain_Spinal_cord_cervical_c_1.npz": {
+    "bootstrap_counts": "9825a32d14ea1955bcdebe7fd187d1b620cbc2af7072fc32111dc907e6e6788b"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Brain_Spinal_cord_cervical_c_1.npz": {
+    "null_counts": "562d62ef53dfa5043fd5ee6868ca4ac7ca495c67ac5063df144196cd64facf54"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Brain_Spinal_cord_cervical_c_1.npz": {
+    "null_counts": "562d62ef53dfa5043fd5ee6868ca4ac7ca495c67ac5063df144196cd64facf54"
+  },
+  "paper/02_primary/null_counts/Brain_Substantia_nigra.npz": {
+    "null_counts": "2ff802282dd3b36ea8c5fd7540f650b6d83db627e857aa094d46e614c920d0ca"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Brain_Substantia_nigra.npz": {
+    "bootstrap_counts": "777ed713a7e6c8f6037d3e420318aaa52973c805cb1b1209cf2dc5fe3e0baf3b"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Brain_Substantia_nigra.npz": {
+    "null_counts": "df98915e74ebf768a27c2307b102b520c075f7209c1d48423f80ed232b983406"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Brain_Substantia_nigra.npz": {
+    "null_counts": "df98915e74ebf768a27c2307b102b520c075f7209c1d48423f80ed232b983406"
+  },
+  "paper/02_primary/null_counts/Breast_Mammary_Tissue.npz": {
+    "null_counts": "6fe77a93ea9abdd03522b61a56f94c6258c6aee11609a5f832306c29f898d033"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Breast_Mammary_Tissue.npz": {
+    "bootstrap_counts": "235b776e25e243854b12d10fe36b17576148e1390aff1ca0fdf486fe5c19903c"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Breast_Mammary_Tissue.npz": {
+    "null_counts": "77f768a1372e308e991875aef78e3e27a4d6dc4be285248a2586203dcc03448a"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Breast_Mammary_Tissue.npz": {
+    "null_counts": "947e521ff4ebee9052b330195577b8ab8b4793d9564b80f95071ebaab2d69073"
+  },
+  "paper/02_primary/null_counts/Cells_Cultured_fibroblasts.npz": {
+    "null_counts": "00b53f4acb9e4a3e1d92d19d9d4193246fa7f8e03653686e705ebeb5f21933c9"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Cells_Cultured_fibroblasts.npz": {
+    "bootstrap_counts": "16eb7fa52257906c4cf564b5717c420ca60d2c41003b65c17eddcc564b69cd1c"
+  },
+  "paper/02_primary/null_counts/Cells_EBV_transformed_lymphocytes.npz": {
+    "null_counts": "2220ffd9656c534ae88341c1d7a8e30d61cbf69827131a615307d85a2f405349"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Cells_EBV_transformed_lymphocytes.npz": {
+    "bootstrap_counts": "539d2bc7e545af4729d6bb7df5655081546b0d6a6158ac99b4d80c20687e08f5"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Cells_EBV_transformed_lymphocytes.npz": {
+    "null_counts": "c457ce51c6c332e9a76fd945bf241632344af2ffda861d45adedab177c0cfc73"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Cells_EBV_transformed_lymphocytes.npz": {
+    "null_counts": "17a3ce4ce5ba3ec649600db7cba249a90537ad7a716ac41968b70cc6d1bf07ef"
+  },
+  "paper/02_primary/null_counts/Colon_Sigmoid.npz": {
+    "null_counts": "b0f4470e4758655196c4b6679ab431b93d1f98eee4c37c941c9b8cc003a3b151"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Colon_Sigmoid.npz": {
+    "bootstrap_counts": "fb4392949b6444b5c076c49f164f87bbdbdb0af78f02e39ab954466b81878ce2"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Colon_Sigmoid.npz": {
+    "null_counts": "097f137682e736e2f1465c5640c08f19a023753cfb4327008dd9fee3d8302b2d"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Colon_Sigmoid.npz": {
+    "null_counts": "17d6d86dced277edf7c1850576eb2eee1194a51ea7d40b673cfa30a67a582574"
+  },
+  "paper/02_primary/null_counts/Colon_Transverse.npz": {
+    "null_counts": "202cee78eab706b0cda887ecd8b007ab58988d0f1a7b62703836016496c1aeb5"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Colon_Transverse.npz": {
+    "bootstrap_counts": "827404413039e1c57c2dd4b5a26de0914629d7f7b8fbf213415410d3b3cc542d"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Colon_Transverse.npz": {
+    "null_counts": "ca97242f12fc3f82f890c8176759505f87612a569ed5009ab77972727b9a4c24"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Colon_Transverse.npz": {
+    "null_counts": "8d5676421089d5f141a414ed2e7a39d05fad042107f00bec024a881172d60050"
+  },
+  "paper/02_primary/null_counts/Esophagus_Gastroesophageal_Junction.npz": {
+    "null_counts": "ca25022345c11ad930a5f0f43457897b82013348697fbcec51c7c3c669e63bce"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Esophagus_Gastroesophageal_Junction.npz": {
+    "bootstrap_counts": "be0e5745c2d8823b4a0aa62745cddd31b4ffb3859b423c22d838394dcab23eaa"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Esophagus_Gastroesophageal_Junction.npz": {
+    "null_counts": "be4016556e5388f6804b39c5240f7d8c17bcb3ee14cfaba853782f0341fad20a"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Esophagus_Gastroesophageal_Junction.npz": {
+    "null_counts": "031acd76658be66f089234ad2bc7c47fcc9f3a2c2471f84ae56e0268ae8c85a0"
+  },
+  "paper/02_primary/null_counts/Esophagus_Mucosa.npz": {
+    "null_counts": "286b028d437894416b66538ab5fc919ae39d6801af2a36de51a9a2bef4c44d84"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Esophagus_Mucosa.npz": {
+    "bootstrap_counts": "91b10f6670f8c9062cf1619db7e194f620a69afdbf752b323a195ad0aea59186"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Esophagus_Mucosa.npz": {
+    "null_counts": "4f84c29ad978e299cf5a67a2d41701084226a53db813977c3e7f8332bb6d21c1"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Esophagus_Mucosa.npz": {
+    "null_counts": "3b103ee5352cc294878192a15df401cf59dafdbfc94ee5086fe2b5ff267c5508"
+  },
+  "paper/02_primary/null_counts/Esophagus_Muscularis.npz": {
+    "null_counts": "5949c4accbd77479d8ec1242740f64810db073f460f91d5880d87b7b33427f67"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Esophagus_Muscularis.npz": {
+    "bootstrap_counts": "1918dfaf2fc07ba59be728d54c812a21412854f1cd7734786d43255a5b2a040e"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Esophagus_Muscularis.npz": {
+    "null_counts": "303f22162f692bdd2aebad66fda82313591672abead3f36fab3c8c3841ec6227"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Esophagus_Muscularis.npz": {
+    "null_counts": "131c3b6b28524aeb6a144dd779d106f946c66c094bbde1df3d71d8a4a9f8decc"
+  },
+  "paper/02_primary/null_counts/Heart_Atrial_Appendage.npz": {
+    "null_counts": "cbaf142322b8890ce7faf28c62a2b4b5de937dfd93c8b79dad3c16856e1281c8"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Heart_Atrial_Appendage.npz": {
+    "bootstrap_counts": "555dfe848befb75fdb39ecd5de60e1b16d0f62706534d4f82678e02a59916063"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Heart_Atrial_Appendage.npz": {
+    "null_counts": "de469a09969f5cc076c27111bf8ce8d43708fbc81ca0d2102e1491d97b2a1418"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Heart_Atrial_Appendage.npz": {
+    "null_counts": "de469a09969f5cc076c27111bf8ce8d43708fbc81ca0d2102e1491d97b2a1418"
+  },
+  "paper/02_primary/null_counts/Heart_Left_Ventricle.npz": {
+    "null_counts": "de7839e3d7690ad8c3d3664334a4394a3d1c1b35500576a2d5e4de55515d44b7"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Heart_Left_Ventricle.npz": {
+    "bootstrap_counts": "dd75b141d3c07e9e51aee35b149303b52d3384d0c46e583f8ba6ebb1423ea137"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Heart_Left_Ventricle.npz": {
+    "null_counts": "11c19f7b49c44199f4de75362b965e0637ce29091fe341d681d900cb5a7d0d16"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Heart_Left_Ventricle.npz": {
+    "null_counts": "11c19f7b49c44199f4de75362b965e0637ce29091fe341d681d900cb5a7d0d16"
+  },
+  "paper/02_primary/null_counts/Kidney_Cortex.npz": {
+    "null_counts": "9475888e0c20e26ef8160df78999f57cfa46280d7fd7ac764138e31a34c8af46"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Kidney_Cortex.npz": {
+    "bootstrap_counts": "c4bce0fe1f9c64e339a140d3af84bbfeddae618b1e7bd5c16dec275f0114ea78"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Kidney_Cortex.npz": {
+    "null_counts": "28b333d1fb4c4097ba70010d649b576452d9946781489fa003cae066d60337b5"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Kidney_Cortex.npz": {
+    "null_counts": "28b333d1fb4c4097ba70010d649b576452d9946781489fa003cae066d60337b5"
+  },
+  "paper/02_primary/null_counts/Liver.npz": {
+    "null_counts": "d4e496939871bd12227c588af9670b96abc9f4193a07932c43c54ad58252fc63"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Liver.npz": {
+    "bootstrap_counts": "cfc6b65397f686371877a496b2c641b5446aa0ad30bbef77d3954f25a8eb4b35"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Liver.npz": {
+    "null_counts": "78660df4994053b519c5b6798929178982ce4b2773f86b5596b12a0ea3d3cff3"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Liver.npz": {
+    "null_counts": "78660df4994053b519c5b6798929178982ce4b2773f86b5596b12a0ea3d3cff3"
+  },
+  "paper/02_primary/null_counts/Lung.npz": {
+    "null_counts": "c2509cd4eb9cffe83ef6761e2dbe87853d52481d9395121c1463f8cfb4ca5849"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Lung.npz": {
+    "bootstrap_counts": "6305d1d9f715b8fdeba7c619d855363e4364b55768717d66c0c2934236b3f323"
+  },
+  "paper/02_primary/null_counts/Minor_Salivary_Gland.npz": {
+    "null_counts": "b6d23320a6a3788f1d8a81986bd028df67149063fee8a5180cb8b8889149fb41"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Minor_Salivary_Gland.npz": {
+    "bootstrap_counts": "84ccdf1bd122c861f89a74707e03b9dcccb664361fe1ae7d2cf5e04905c5c787"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Minor_Salivary_Gland.npz": {
+    "null_counts": "55d99d2f718f6f4c6686432c6c53d26881599154514d3c7f312fbe3c81706869"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Minor_Salivary_Gland.npz": {
+    "null_counts": "55d99d2f718f6f4c6686432c6c53d26881599154514d3c7f312fbe3c81706869"
+  },
+  "paper/02_primary/null_counts/Muscle_Skeletal.npz": {
+    "null_counts": "bc687f6eb76f693bca7908425e0fd0dcf73d89c544f5de20065750e70a7cbb8b"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Muscle_Skeletal.npz": {
+    "bootstrap_counts": "0b252fae32a24712612a3559fb4ce97d38970d6265262c0974eb64d7246d54f0"
+  },
+  "paper/02_primary/null_counts/Nerve_Tibial.npz": {
+    "null_counts": "d9639b108e2c738b8967795016a6f0979b730d18f6abc6d7559def0676430705"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Nerve_Tibial.npz": {
+    "bootstrap_counts": "ba124f324afcb0f08d6b5275c65195680de66843418553cb0d40eaccbe036a63"
+  },
+  "paper/02_primary/null_counts/Ovary.npz": {
+    "null_counts": "d7672b5afc63cfeb017379bb167976172a5953317ef84b38702399f6590a5c1d"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Ovary.npz": {
+    "bootstrap_counts": "2b8daaeeb979e8f2a560b789668d58d4394f7d19b9085505f97cfd14e3ac6e74"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Ovary.npz": {
+    "null_counts": "8887cb7b652e0df4c0e9f0fe0a71f20e2fe334bc8a064889a152ae8e478ca5e9"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Ovary.npz": {
+    "null_counts": "8887cb7b652e0df4c0e9f0fe0a71f20e2fe334bc8a064889a152ae8e478ca5e9"
+  },
+  "paper/02_primary/null_counts/Pancreas.npz": {
+    "null_counts": "852427fbdc37d3285305e54ad1d5e66104c287bac2825937d0e932926b9b2288"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Pancreas.npz": {
+    "bootstrap_counts": "3b79e3845448ef61780f3c1cc46572857366cb5cf20698a2af5adf47430c608a"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Pancreas.npz": {
+    "null_counts": "0ad5518fcf272f7b6ef35d88280cd2e432a4639f4d321b6049af8612744727b9"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Pancreas.npz": {
+    "null_counts": "e32910df2a919de986b360935e3dd9bb6f92c7d3f7fc6fcf1aed6be2c2fc7b27"
+  },
+  "paper/02_primary/null_counts/Pituitary.npz": {
+    "null_counts": "68b8d8f978fd555b07460ac0a86d19a617ea66af7c114d31fbd94d6d96b7dce5"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Pituitary.npz": {
+    "bootstrap_counts": "e7142dff23ace0ffe4bebcac79095c7546330e548818c40e3198f537bbe3637d"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Pituitary.npz": {
+    "null_counts": "40c506d4b0c43512e4297e47f16d1d7396e1d1f25adf20043ee1503e7cb43571"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Pituitary.npz": {
+    "null_counts": "40c506d4b0c43512e4297e47f16d1d7396e1d1f25adf20043ee1503e7cb43571"
+  },
+  "paper/02_primary/null_counts/Prostate.npz": {
+    "null_counts": "70551aa5e587f47511a605671bfc53bec63fde3050a0cc08663bddd7a2c791d7"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Prostate.npz": {
+    "bootstrap_counts": "e5f29041d525e6a2dae6f4f2c56c4adde2e775101fd9d809b32f2510ceea8d58"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Prostate.npz": {
+    "null_counts": "e0797b8d10041ed620f97b62cb468123a88a13360f91afc6f145353b5676c43a"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Prostate.npz": {
+    "null_counts": "6fefbb50e2801685fc83db128c3dfe37f78aaccb7f3d036c1130cadf907a8cef"
+  },
+  "paper/02_primary/null_counts/Skin_Not_Sun_Exposed_Suprapubic.npz": {
+    "null_counts": "3a8be21b0bab618e85d73157c2290cf2cdb2adace12f31ce4f0d471cbe5d1d96"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Skin_Not_Sun_Exposed_Suprapubic.npz": {
+    "bootstrap_counts": "dd1ff5be39beb71144f2f6f255e44dce896a11f95a3b4f3ea3dcd10adf8d3bd2"
+  },
+  "paper/02_primary/null_counts/Skin_Sun_Exposed_Lower_leg.npz": {
+    "null_counts": "c20cf3794e4a6be8cbabe7e5fde2b12b1e7feb44f3e9cafdfc173ccb2c65f8ba"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Skin_Sun_Exposed_Lower_leg.npz": {
+    "bootstrap_counts": "1670ca8122215440b74ebfb5a9bd577f940df9e453eacac9f82023244e471097"
+  },
+  "paper/02_primary/null_counts/Small_Intestine_Terminal_Ileum.npz": {
+    "null_counts": "9c49a20d83c38d94c6575fd2776027b2732ecfabc56f838691d9b021f287eea5"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Small_Intestine_Terminal_Ileum.npz": {
+    "bootstrap_counts": "c9335ab6f172a100d46a4c6ec68d84bd20ae35993323b59c437445c57fc35b3b"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Small_Intestine_Terminal_Ileum.npz": {
+    "null_counts": "d380bf2e86fccc31737de432b29369d039899a111ec566ab4f273bfe10f97580"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Small_Intestine_Terminal_Ileum.npz": {
+    "null_counts": "01d51a9aba51b7686ae5ce14bca642652dca1fd84255119e21ca318dc19395f8"
+  },
+  "paper/02_primary/null_counts/Spleen.npz": {
+    "null_counts": "025fdfdb40947ea52b2c3cde884c7100f8c6df4f9dd75b4ac8947d0298c4ae69"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Spleen.npz": {
+    "bootstrap_counts": "3d53819672312b894625bd31e9cdf593f45c925dcdbc2ea47bacd01d4f8efa2c"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Spleen.npz": {
+    "null_counts": "0baf347333b5c6636be41dcdaf5248ce47287017459ce58bef7bdd25cfa8e27c"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Spleen.npz": {
+    "null_counts": "19fa818f93208bb9f378879cdbd03cef6605741614d161883f611d66fc8a1502"
+  },
+  "paper/02_primary/null_counts/Stomach.npz": {
+    "null_counts": "32f446dcdf38a4b17d1141dba344e5c43c1199e6c0c3b98386b1ee89ccc4705c"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Stomach.npz": {
+    "bootstrap_counts": "00b169d2369ea11c3633d0c640c2db8b85867e4c32a639d6067e072384684f22"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Stomach.npz": {
+    "null_counts": "2294aaf1857b7e955f27b763289014a398cb070726e7f8924a02e68f0e5c57ca"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Stomach.npz": {
+    "null_counts": "99424f7c510c8bc0c63c18bfa12d3575a0e9c85f78ba50d52fe42661c12d78be"
+  },
+  "paper/02_primary/null_counts/Testis.npz": {
+    "null_counts": "16cfb9c10ca476a41f5226a505fdc71180171e1dfa05fb880839c4da43b589ec"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Testis.npz": {
+    "bootstrap_counts": "e142be22d8371faee98dfe2462e78f05d422d0ae882918e3b7c4a514d4f42eba"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Testis.npz": {
+    "null_counts": "c2110b38e76ecb6bc63404010a0fdc65ae874dc678120da6d75f6e490cfbfa4e"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Testis.npz": {
+    "null_counts": "1c328c1930e42715995fed858f3c33f1d569f9941f774eeeb935702cb8336dc7"
+  },
+  "paper/02_primary/null_counts/Thyroid.npz": {
+    "null_counts": "809de070cae0c9037bbe14a5012cc5b61c02c692b1d1ef16b272c73d06b4e079"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Thyroid.npz": {
+    "bootstrap_counts": "27f8f188e2e7f6fd8b9b7c650766b6805cd809853163f7cb144f33f06eb29556"
+  },
+  "paper/02_primary/null_counts/Uterus.npz": {
+    "null_counts": "e170457424f12c3e32e7cefd9b8f9b404d0dd59fd8e6cb550689a45d075b12e1"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Uterus.npz": {
+    "bootstrap_counts": "43d9dc7bad606d0499ad2f2e4b27e0d30233a148370e4a2bfc95bc4ad444311d"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Uterus.npz": {
+    "null_counts": "ea0e00ea1643228bc284a7eb0de2fba72ce7f5f94f774f8c736b366a9a88029e"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Uterus.npz": {
+    "null_counts": "ea0e00ea1643228bc284a7eb0de2fba72ce7f5f94f774f8c736b366a9a88029e"
+  },
+  "paper/02_primary/null_counts/Vagina.npz": {
+    "null_counts": "f7aab14a30ee2e97d906a3d8852105000a06fad584a23b53b0b084b6c08245ad"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Vagina.npz": {
+    "bootstrap_counts": "d8885fa6a22b2bf676530cb0c988b7d9f75eb8def2a560dd526e154ccaa0cf01"
+  },
+  "paper-smote-fixed/03_smote/null_counts/Vagina.npz": {
+    "null_counts": "7232cafc6c17e99fb2f1da730ed2a034920b01c92a66184197ca8954e3089002"
+  },
+  "paper-smote-adaptive/03_smote/null_counts/Vagina.npz": {
+    "null_counts": "7232cafc6c17e99fb2f1da730ed2a034920b01c92a66184197ca8954e3089002"
+  },
+  "paper/02_primary/null_counts/Whole_Blood.npz": {
+    "null_counts": "1a2fad7879fb67f941465f35b8f7d94e04cb94c7390596a0a09f68a2fa2a00ba"
+  },
+  "paper/04_bootstrap/bootstrap_counts/Whole_Blood.npz": {
+    "bootstrap_counts": "2aff00e4369e31447df5d695cfc4baa1e7a6a7951fd2e4b05efcfbb92753f8e4"
+  }
+}

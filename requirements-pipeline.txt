@@ -1,0 +1,10 @@
+# Extra dependencies for the offline pipeline scripts in scripts/.
+# Not needed to run the web application or the statistical validation.
+#
+#     pip install -r requirements.txt -r requirements-pipeline.txt
+#
+# cassandra-driver is required only by scripts/00_dump_cassandra.py, which
+# exports GTEx v10 from the project's Cassandra instance. Everyone else starts
+# from scripts/00b_load_gtex_v8.py, which reads the public GTEx files.
+tqdm>=4.65
+cassandra-driver>=3.28

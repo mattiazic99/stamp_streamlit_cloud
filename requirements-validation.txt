@@ -1,0 +1,13 @@
+# Extra dependency for the exploratory SMOTE stage of the statistical
+# validation (statistical_validation_cli/smote.py).
+#
+# Install this in a SEPARATE virtual environment from the app: imbalanced-learn
+# pins a narrow scikit-learn range, and mixing it into the app environment is
+# what breaks the SMOTE stage. See README.md, "Reproducing the statistical
+# validation".
+#
+#     python -m venv .venv-validation
+#     .venv-validation/bin/pip install -r requirements.txt -r requirements-validation.txt
+#
+# Expected after install: imbalanced-learn 0.14.2, scikit-learn 1.8.0.
+imbalanced-learn==0.14.2

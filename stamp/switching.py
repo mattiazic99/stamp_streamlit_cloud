@@ -3,7 +3,7 @@
 A gene is "switching" in a tissue if its binary expression vector across
 age brackets shows exactly one permanent transition: e.g. [0,0,1,1,1,1]
 or [1,1,0,0,0,0]. Vectors with multiple transitions or constant values
-are NOT switching.
+are not switching.
 
 Formal definition (Definition 1 of the paper)
 ---------------------------------------------
@@ -15,9 +15,9 @@ the gene is switching if there exists an integer k such that:
     4. there is no (i, j) with i < k and j >= k and t_i == t_j
        (the prefix value and suffix value differ)
 
-This implementation is more rigorous than the original R code, which
-in `auto_sets.R` accepts vectors with multiple transitions (only the
-first is detected). Divergence is documented in docs/divergences_from_R.md.
+The R reference in auto_sets.R checks the first transition and accepts
+some vectors with later transitions. This implementation requires exactly
+one transition.
 
 Bracket convention
 ------------------
@@ -28,8 +28,7 @@ The switching bracket is the bracket where the new state is first
 observed. By Definition 1 condition (1), k must be > 1, so the switch
 cannot be assigned to bracket index 0 (i.e. [20-29]). Valid switching
 bracket indices are therefore {1, 2, 3, 4, 5}, corresponding to the
-five `SWITCHING_BRACKETS` defined in `stamp.config`.
-"""
+five `SWITCHING_BRACKETS` defined in `stamp.config`."""
 from __future__ import annotations
 
 from typing import Optional, Sequence
@@ -40,9 +39,7 @@ import pandas as pd
 from stamp.config import AGE_BRACKETS, SWITCHING_BRACKETS
 
 
-# ---------------------------------------------------------------------------
 # Core predicates: pure functions on a single binary vector
-# ---------------------------------------------------------------------------
 
 def is_switching_gene(binary_vector: Sequence[int]) -> bool:
     """Check whether a binary vector qualifies as switching per Definition 1.
@@ -78,9 +75,7 @@ def is_switching_gene(binary_vector: Sequence[int]) -> bool:
     """
     v = _validate_binary_vector(binary_vector)
 
-    # A vector is switching iff there is exactly one position where v[i] != v[i-1].
-    # This is the most direct translation of Definition 1: a single permanent
-    # transition is equivalent to a single index where consecutive elements differ.
+    # Definition 1 requires exactly one change between consecutive states.
     transitions = np.diff(v)
     n_transitions = int(np.count_nonzero(transitions))
     return n_transitions == 1
@@ -119,9 +114,7 @@ def get_switching_bracket(binary_vector: Sequence[int]) -> Optional[int]:
     return int(np.argmax(np.abs(np.diff(v)) != 0)) + 1
 
 
-# ---------------------------------------------------------------------------
 # Pipeline-level function: from a normalized matrix to per-bracket gene sets
-# ---------------------------------------------------------------------------
 
 def identify_switching_genes(
     normalized_df: pd.DataFrame,
@@ -181,16 +174,12 @@ def identify_switching_genes(
             f"subset of {AGE_BRACKETS}."
         )
 
-    # Pre-allocate result with empty lists for every reachable bracket.
-    # Brackets reachable in this call are those columns that are in
-    # SWITCHING_BRACKETS. Brackets not present as columns are not keys.
+    # Include only switching brackets present in the input columns.
     result: dict[str, list[str]] = {
         b: [] for b in columns if b in SWITCHING_BRACKETS
     }
 
-    # Binarise: NaN propagates as NaN through the comparison; we cast to
-    # float so that NaN survives. Values >= threshold become 1.0; values
-    # below become 0.0; NaN stays NaN.
+    # Preserve NaN; valid values become 1 at or above the threshold, otherwise 0.
     values = normalized_df.to_numpy(dtype=np.float64, copy=True)
     binarised = np.where(np.isnan(values), np.nan, (values >= threshold).astype(float))
 
@@ -205,10 +194,7 @@ def identify_switching_genes(
     # A row is switching iff it has no NaN AND exactly one transition.
     is_switching = (~rows_with_nan) & (n_transitions == 1)
 
-    # For switching rows, find the bracket index where the transition occurs.
-    # argmax on the boolean mask of "row has nonzero diff at position j"
-    # returns the FIRST nonzero column; this is correct because for
-    # switching rows there is exactly one nonzero diff.
+    # Each switching row has one nonzero diff; argmax locates that transition.
     diff_nonzero = diffs != 0
     switch_positions = np.argmax(diff_nonzero, axis=1) + 1  # shift back to v index
 
@@ -216,8 +202,7 @@ def identify_switching_genes(
     for row_idx in np.flatnonzero(is_switching):
         bracket_idx = int(switch_positions[row_idx])
         bracket_label = columns[bracket_idx]
-        # bracket_label cannot be AGE_BRACKETS[0] because diff index 0
-        # corresponds to v index 1 at minimum. So it's always in result.
+        # The earliest transition is at vector index 1, a valid switching bracket.
         result[bracket_label].append(str(gene_ids[row_idx]))
 
     return result
@@ -291,9 +276,7 @@ def identify_switching_with_direction(
     return result
 
 
-# ---------------------------------------------------------------------------
 # Internal helpers
-# ---------------------------------------------------------------------------
 
 def _validate_binary_vector(binary_vector: Sequence[int]) -> np.ndarray:
     """Validate and convert input to a 1-D numpy int8 array."""

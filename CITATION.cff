@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "Please cite this software and the associated STAMP manuscript."
+type: software
+title: "STAMP: Spatio-Temporal Analysis and Mapping of gene-expression Patterns"
+version: 1.0.0
+repository-code: "https://github.com/mattiazic99/stamp_streamlit_cloud"
+url: "https://stampgui.streamlit.app/"
+authors:
+  - family-names: Kahveci
+    given-names: O.
+  - family-names: Khatib
+    given-names: T.
+  - family-names: Zicarelli
+    given-names: M.
+  - family-names: Guzzi
+    given-names: P. H.
+  - family-names: Veltri
+    given-names: P.
+  - family-names: Mirabelli
+    given-names: F.
+  - family-names: Kahveci
+    given-names: T.

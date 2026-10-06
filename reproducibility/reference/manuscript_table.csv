@@ -1,0 +1,19 @@
+tissue,observed_switching,observed_up,observed_down,null_median,empirical_p_value,q_value_bh
+Artery - Tibial,893,313,580,195,0.0002,0.007
+Colon - Sigmoid,2423,2037,386,582,0.0004,0.007
+Nerve - Tibial,1144,1038,106,237,0.0004,0.007
+Colon - Transverse,1659,1565,94,116,0.0008,0.010
+Brain - Cerebellar Hemisphere,5673,19,5654,1161,0.0025,0.022
+Liver,2254,600,1654,315,0.0026,0.022
+Thyroid,1057,770,287,335,0.0042,0.030
+Whole Blood,25,0,25,0,0.0051,0.032
+Lung,528,19,509,118,0.0061,0.034
+Ovary,3300,1832,1468,1147,0.0072,0.036
+Artery - Aorta,1361,606,755,444,0.0104,0.047
+Muscle - Skeletal,14,7,7,2,0.0118,0.049
+Brain - Cerebellum,4318,25,4293,1432,0.0127,0.049
+Brain - Caudate (basal ganglia),3064,51,3013,151,0.0171,0.061
+Heart - Left Ventricle,289,7,282,5,0.0197,0.063
+Vagina,3575,3313,262,864,0.0201,0.063
+Esophagus - Mucosa,730,94,636,213,0.0270,0.079
+Brain - Hippocampus,3455,5,3450,119,0.0288,0.080

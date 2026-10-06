@@ -1,11 +1,2 @@
-# Runtime dependencies for the STAMP Streamlit app (Streamlit Cloud).
-# NOTE: cassandra-driver / tqdm are intentionally omitted — they are only used
-# by the offline data-dump scripts, not by the web app.
-streamlit>=1.30
-pandas>=2.0
-numpy>=1.24
-pyarrow>=14
-scipy>=1.11
-plotly>=5.18
-matplotlib>=3.7
-seaborn>=0.12
+# Pinned application environment shared by Docker and Streamlit Cloud.
+-r requirements-interface.lock.txt

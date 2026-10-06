@@ -5,11 +5,10 @@ import plotly.graph_objects as go
 import plotly.figure_factory as ff
 from scipy.spatial.distance import squareform
 from utils.analysis import compute_jaccard_matrix, compute_linkage, compute_common_genes_matrix, compute_percent_overlap_matrix
-from utils.parsing import parse_multiple_stamp_files, extract_tissue_name  # AGGIUNTO IMPORT
+from utils.parsing import parse_multiple_stamp_files, extract_tissue_name
 from components.downloads import create_csv_download, display_download_section
 
-
-# ── Plotly chart config ──
+# Plotly toolbar options.
 def _plotly_cfg(filename="chart"):
     return {
         "toImageButtonOptions": {"format": "png", "scale": 2, "filename": filename.replace(".png", "")},
@@ -17,10 +16,10 @@ def _plotly_cfg(filename="chart"):
     }
 
 def _download_plotly_as_png(plotly_fig, filename):
-    """Render a working Download PNG button using Plotly.js from CDN."""
+    """Offer a PNG download through Plotly.js loaded from its CDN."""
     import streamlit.components.v1 as _components
     safe_name = filename.replace(".png", "").replace("'", r"\'")
-    fig_json = plotly_fig.to_json().replace("</", r"<\/")   # prevent HTML injection
+    fig_json = plotly_fig.to_json().replace("</", r"<\/")   # Escape labels before inserting them into HTML.
     html = (
         '<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>'
         '<div id="hc" style="position:absolute;left:-9999px;width:1200px;height:600px;"></div>'
@@ -45,15 +44,13 @@ def _download_plotly_as_png(plotly_fig, filename):
     )
     _components.html(html, height=50)
 
-
-# ── helper: Plotly heatmap (tissue × tissue, optional triangular mask) ──
+# Tissue heatmap with an optional triangular mask.
 def _interactive_heatmap_tissue(matrix, labels, title, colorbar_label,
                                  cmap="YlGnBu", mask_upper=True,
                                  fmt="float", key=None):
     """Reusable interactive heatmap for tissue-vs-tissue matrices."""
     n = matrix.shape[0]
 
-    # Build display values & hover
     z_vals = matrix.copy().astype(float)
     text_vals = []
     hover_vals = []
@@ -103,7 +100,6 @@ def _interactive_heatmap_tissue(matrix, labels, title, colorbar_label,
         st.plotly_chart(fig, use_container_width=True, key=key, config=_plotly_cfg())
     _download_plotly_as_png(fig, f"{title.replace(' ', '_').replace('—', '_')}.png")
 
-
 def show():
     """Age-Specific Analysis Page"""
     
@@ -112,125 +108,66 @@ def show():
     
     age_groups = ["30–39", "40–49", "50–59", "60–69", "70–79"]
     
-    # ── Data source toggle ─────────────────────────────────────────
-    import sys as _sys
-    from pathlib import Path as _Path
-    _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
-    from data_loader import get_available_tissues, get_sets_for_tissue, sets_to_gui_format, sets_to_gene_sets, complete_mode
 
-    # Pre-loaded (GTEx) mode removed by design: users always upload their files.
-    data_source = "📂 Upload files"
+    st.markdown("""
+    <div class="analysis-section">
+        <h3>📂 Upload Multiple Tissue Files</h3>
+        <p>Upload multiple tissue files to analyze age-specific patterns</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    complete = complete_mode()
+    uploaded_files = st.file_uploader(
+        "📂 Upload STAMP .txt files", 
+        type=["txt"],
+        accept_multiple_files=True, 
+        key="age_specific_files",
+        help="Upload multiple tissue gene switching files"
+    )
 
-    if data_source == "📦 Pre-loaded (GTEx)":
-        version = st.session_state.get("gtex_version", "v10")
-        all_tissues = get_available_tissues(version, complete)
+    if not uploaded_files or len(uploaded_files) < 2:
+        st.info("👆 Please upload at least 2 tissue files for age-specific analysis.")
 
-        st.markdown(f"""
-        <div class="analysis-section">
-            <h3>🧪 Select Tissues — GTEx {version}</h3>
-            <p>Select multiple tissues to analyze age-specific patterns</p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown("### 📋 Age Group Information")
+        age_info_df = pd.DataFrame({
+            'Age Group': age_groups,
+            'Age Range': ['30-39 years', '40-49 years', '50-59 years', '60-69 years', '70-79 years'],
+            'Life Stage': ['Early Adult', 'Middle Adult', 'Late Middle Age', 'Early Senior', 'Senior'],
+            'Description': [
+                'Peak physical performance period',
+                'Career establishment phase',
+                'Pre-retirement transition',
+                'Early retirement phase',
+                'Advanced aging period'
+            ]
+        })
+        st.dataframe(age_info_df, use_container_width=True)
+        create_csv_download(age_info_df, "age_groups_info.csv", "⬇️ Download Age Groups Info (CSV)")
+        return
 
-        selected_tissues = st.multiselect(
-            "Select tissues:",
-            all_tissues,
-            default=all_tissues[:5],
-            key="as_tissues",
-        )
+    st.success(f"✅ {len(uploaded_files)} tissue files loaded successfully!")
 
-        if not selected_tissues or len(selected_tissues) < 2:
-            st.info("👆 Please select at least 2 tissues for age-specific analysis.")
-            return
-
-        data_parsed = {}
-        for tissue in selected_tissues:
-            sets_dict = get_sets_for_tissue(version, tissue, complete)
-            _, counts, df = sets_to_gui_format(sets_dict)
-            gene_sets_list = sets_to_gene_sets(sets_dict)
-            data_parsed[tissue] = {
-                'gene_sets': gene_sets_list,
-                'dataframe': df,
-                'counts': counts,
-                'total_genes': sum(len(s) for s in gene_sets_list),
-                'original_filename': f"{tissue}.txt",
-                'clean_name': tissue,
-            }
-        summary = {
-            'total_files': len(selected_tissues),
-            'successful_parses': len(selected_tissues),
-            'failed_parses': 0,
-            'total_unique_genes': len(set().union(*(set().union(*d['gene_sets']) for d in data_parsed.values()))),
-            'tissue_names': list(data_parsed.keys()),
-            'rejected_files': [],
-        }
-        st.success(f"✅ {len(selected_tissues)} tissues loaded from GTEx {version}!")
-
-    else:
-        # Original upload mode
-        st.markdown("""
-        <div class="analysis-section">
-            <h3>📂 Upload Multiple Tissue Files</h3>
-            <p>Upload multiple tissue files to analyze age-specific patterns</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        uploaded_files = st.file_uploader(
-            "📂 Upload STAMP .txt files", 
-            type=["txt"],
-            accept_multiple_files=True, 
-            key="age_specific_files",
-            help="Upload multiple tissue gene switching files"
-        )
-
-        if not uploaded_files or len(uploaded_files) < 2:
-            st.info("👆 Please upload at least 2 tissue files for age-specific analysis.")
-
-            # Show age group information
-            st.markdown("### 📋 Age Group Information")
-            age_info_df = pd.DataFrame({
-                'Age Group': age_groups,
-                'Age Range': ['30-39 years', '40-49 years', '50-59 years', '60-69 years', '70-79 years'],
-                'Life Stage': ['Early Adult', 'Middle Adult', 'Late Middle Age', 'Early Senior', 'Senior'],
-                'Description': [
-                    'Peak physical performance period',
-                    'Career establishment phase',
-                    'Pre-retirement transition',
-                    'Early retirement phase',
-                    'Advanced aging period'
-                ]
-            })
-            st.dataframe(age_info_df, use_container_width=True)
-            create_csv_download(age_info_df, "age_groups_info.csv", "⬇️ Download Age Groups Info (CSV)")
-            return
-
-        st.success(f"✅ {len(uploaded_files)} tissue files loaded successfully!")
-
-        # Parse all files USANDO LA FUNZIONE CHE GIÀ PULISCE I NOMI
-        result = parse_multiple_stamp_files(uploaded_files, age_groups)
-        # ── Show rejected files (STAMP validation errors) ──────────────
-        _rejected = result['summary'].get('rejected_files', [])
-        if _rejected:
-            for _rej in _rejected:
-                st.error(
-                    f"❌ **{_rej['filename']}** is not a valid STAMP file:\n\n"
-                    + "\n".join(f"- {e}" for e in _rej.get('errors', []))
-                )
-            st.info(
-                "ℹ️ **STAMP format**: each file must have exactly **5 lines** "
-                "(one per age group), with **space-separated gene names** on each line."
+    # parse_multiple_stamp_files also normalises the tissue names.
+    result = parse_multiple_stamp_files(uploaded_files, age_groups)
+    # Report files rejected by format validation.
+    _rejected = result['summary'].get('rejected_files', [])
+    if _rejected:
+        for _rej in _rejected:
+            st.error(
+                f"❌ **{_rej['filename']}** is not a valid STAMP file:\n\n"
+                + "\n".join(f"- {e}" for e in _rej.get('errors', []))
             )
+        st.info(
+            "ℹ️ **STAMP format**: each file must have exactly **5 lines** "
+            "(one per age group), with **space-separated gene names** on each line."
+        )
 
-        data_parsed = result['data']
-        summary = result['summary']
+    data_parsed = result['data']
+    summary = result['summary']
 
-    # Converti in formato compatibile con le funzioni di analisi
+    # Reshape into the {tissue: [set_per_bracket]} form the analysis helpers expect.
     data = {tissue: data_parsed[tissue]['gene_sets'] for tissue in data_parsed.keys()}
-    tissues = list(data.keys())  # Nomi già puliti
+    tissues = list(data.keys())  # already normalised
     
-    # Age group selection
     st.markdown("### 🎯 Select Age Group for Analysis")
     selected_age = st.selectbox(
         "Choose age group:",
@@ -241,7 +178,6 @@ def show():
     
     selected_idx = age_groups.index(selected_age)
     
-    # Analysis options
     col1, col2 = st.columns(2)
     with col1:
         show_dendrograms = st.checkbox("🌳 Show dendrogram", value=True)
@@ -251,14 +187,13 @@ def show():
         analysis_type = st.selectbox("📊 Analysis Focus", 
                                    ["Similarity", "Gene Counts", "Both"])
     
-    # === AGE-SPECIFIC OVERVIEW ===
+    # Age-specific overview
     st.markdown(f"""
     <div class="analysis-section">
         <h2>📊 Age Group {selected_age} - Tissue Overview</h2>
     </div>
     """, unsafe_allow_html=True)
     
-    # Calculate statistics for selected age group
     age_stats = []
     for tissue in tissues:
         genes_in_age = data[tissue][selected_idx]
@@ -266,7 +201,7 @@ def show():
         percentage_in_age = (len(genes_in_age) / total_genes_tissue * 100) if total_genes_tissue > 0 else 0
         
         age_stats.append({
-            'Tissue': tissue,  # Nome già pulito
+            'Tissue': tissue,  # already normalised
             'Genes in Age Group': len(genes_in_age),
             'Total Tissue Genes': total_genes_tissue,
             'Percentage in Age': f"{percentage_in_age:.1f}%"
@@ -274,7 +209,6 @@ def show():
     
     df_age_stats = pd.DataFrame(age_stats)
     
-    # Display metrics
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         total_age_genes = sum([len(data[t][selected_idx]) for t in tissues])
@@ -312,7 +246,6 @@ def show():
         </div>
         """, unsafe_allow_html=True)
     
-    # Display detailed statistics table
     st.dataframe(df_age_stats, use_container_width=True)
     
     # Bar chart of gene counts per tissue for selected age (Plotly)
@@ -359,7 +292,7 @@ def show():
         st.plotly_chart(bar_fig, use_container_width=True, key="as_bar_gene_counts", config=_plotly_cfg())
         _download_plotly_as_png(bar_fig, f"gene_counts_age_{selected_age.replace('–','_')}.png")
     
-    # === SIMILARITY ANALYSIS FOR SELECTED AGE ===
+    # Similarity analysis for selected age
     if analysis_type in ["Similarity", "Both"]:
         st.markdown(f"""
         <div class="analysis-section">
@@ -367,7 +300,6 @@ def show():
         </div>
         """, unsafe_allow_html=True)
         
-        # Compute similarity matrix for selected age
         age_data = {tissue: [data[tissue][selected_idx]] for tissue in tissues}
         matrix_age_specific, tissues_sorted = compute_jaccard_matrix(age_data, mode="life")
         
@@ -457,7 +389,7 @@ def show():
             st.plotly_chart(rank_fig, use_container_width=True, key="as_bar_ranking", config=_plotly_cfg())
             _download_plotly_as_png(rank_fig, f"ranking_age_{selected_age.replace('–','_')}_{ref_tissue}.png")
     
-    # === AGE COMPARISON ACROSS TISSUES ===
+    # Age comparison across tissues
     st.markdown("""
     <div class="analysis-section">
         <h2>📈 Age Group Comparison</h2>
@@ -474,7 +406,7 @@ def show():
             gene_count = len(data[tissue][i])
             is_selected = (age == selected_age)
             age_comparison_data.append({
-                'Tissue': tissue,  # Nome già pulito
+                'Tissue': tissue,  # already normalised
                 'Age Group': age,
                 'Gene Count': gene_count,
                 'Selected': is_selected
@@ -488,7 +420,6 @@ def show():
     tissue_labels = list(pivot_data.index)
     age_labels = list(pivot_data.columns)
 
-    # Build hover
     hover = []
     text_disp = []
     for i, t in enumerate(tissue_labels):
@@ -538,7 +469,7 @@ def show():
         st.plotly_chart(hm_fig, use_container_width=True, key="as_hm_age_comparison", config=_plotly_cfg())
     _download_plotly_as_png(hm_fig, f"age_comparison_heatmap_{selected_age.replace('–','_')}.png")
     
-    # === DOWNLOAD SECTION ===
+    # Download section
     display_download_section("📥 Download Age-Specific Analysis Results")
     
     col1, col2, col3 = st.columns(3)

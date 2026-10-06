@@ -8,9 +8,7 @@ import pytest
 from stamp.normalize import normalize_tissue
 
 
-# ---------------------------------------------------------------------------
 # Fixtures
-# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def simple_metadata():
@@ -35,9 +33,7 @@ def simple_tpm():
     )
 
 
-# ---------------------------------------------------------------------------
 # Core behaviour
-# ---------------------------------------------------------------------------
 
 def test_min_max_canonical_formula(simple_tpm, simple_metadata):
     """The output must be in [0, 1] with min=0 and max=1 per gene."""
@@ -72,7 +68,7 @@ def test_epsilon_filter_custom_threshold():
     out = normalize_tissue(tpm, md, "Liver", epsilon=0.01)
     assert "small_range" not in out.index
     assert "big_range" in out.index
-    # Stricter epsilon: even big_range survives but small_range is gone
+    # With the stricter epsilon, big_range survives and small_range is dropped.
     out2 = normalize_tissue(tpm, md, "Liver", epsilon=0.001)
     assert "small_range" in out2.index
 
@@ -142,12 +138,12 @@ def test_tissue_filter_correctness():
     )
     md = pd.DataFrame({
         "sample_id": ["S1", "S2", "S3"],
-        "tissue": ["Liver", "Liver", "Brain"],  # S3 is in Brain!
+        "tissue": ["Liver", "Liver", "Brain"],  # S3 belongs to Brain, not the requested tissue.
         "age_bracket": ["20-29", "40-49", "20-29"],
     })
     out = normalize_tissue(tpm, md, "Liver")
     # Only S1 and S2 used: min=10, max=20, range=10
-    # S1 -> 0, S2 -> 1
+    # S1 -> 0, s2 -> 1
     assert out.loc["g1", "20-29"] == pytest.approx(0.0)
     assert out.loc["g1", "40-49"] == pytest.approx(1.0)
 
@@ -198,9 +194,7 @@ def test_output_dtype_is_float32():
     assert out.dtypes.iloc[0] == np.float32
 
 
-# ---------------------------------------------------------------------------
 # Validation / error cases
-# ---------------------------------------------------------------------------
 
 def test_unknown_tissue_raises(simple_tpm, simple_metadata):
     with pytest.raises(ValueError, match="No samples found"):
@@ -269,9 +263,8 @@ def test_sample_with_unknown_bracket_dropped():
     out = normalize_tissue(tpm, md, "Liver")
     # Output should only have 20-29 and 40-49
     assert set(out.columns) == {"20-29", "40-49"}
-    # S_unknown (9999) is excluded from the scale: min=10, max=20, range=10.
-    # So S1 -> 0.0 and S2 -> 1.0. (Under the old behaviour, max would have been
-    # 9999 and S2 would have been ~0.001 — this assertion locks in the fix.)
+    # The unknown bracket must not affect scaling: min=10, max=20.
+    # Its value of 9999 would otherwise push S2 down to about 0.001.
     assert out.loc["g1", "20-29"] == pytest.approx(0.0)
     assert out.loc["g1", "40-49"] == pytest.approx(1.0)
 

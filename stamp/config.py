@@ -3,6 +3,7 @@
 The pipeline is parametric on the GTEx version. Use `paths_for(version)`
 to get version-specific paths.
 """
+import os
 from pathlib import Path
 from typing import Literal
 
@@ -16,26 +17,19 @@ EXTERNAL_DIR = DATA_DIR / "external"
 OUTPUT_DIR = ROOT / "output"
 COMPARE_DIR = OUTPUT_DIR / "compare"
 
-# 6 fasce di età come da paper
+# Six age brackets used in the paper.
 AGE_BRACKETS = ("20-29", "30-39", "40-49", "50-59", "60-69", "70-79")
-# Lo switch è valutato dalla seconda fascia in poi
+# Switches are assigned from the second bracket onward.
 SWITCHING_BRACKETS = AGE_BRACKETS[1:]
 
 DEFAULT_THRESHOLD = 0.5
 EPSILON = 0.01
 
-# ---------------------------------------------------------------------------
 # Complete age-bin coverage
-# ---------------------------------------------------------------------------
-# A tissue has "complete age-bin coverage" if it has at least one valid sample
-# in ALL six GTEx age brackets. Tissues missing one or more brackets are
-# excluded from the main "complete" analysis (see stamp.tissues), but remain
-# available as a sensitivity analysis through the default (all-tissues) mode.
-#
-# The sets below are a documented reference of the incomplete tissues observed
-# in the current GTEx dumps (computed dynamically by
-# stamp.tissues.tissues_with_complete_age_bins from the metadata; these
-# constants are NOT used for filtering, only for documentation / tests).
+# Complete tissues have samples in all six age brackets. The all-tissues
+# mode keeps incomplete tissues for sensitivity analyses.
+# These reference sets document the GTEx dumps and support tests; filtering
+# uses stamp.tissues.tissues_with_complete_age_bins(), computed from metadata.
 INCOMPLETE_TISSUES_BY_VERSION: dict[str, set[str]] = {
     "v8": {
         "Bladder",
@@ -72,8 +66,8 @@ def paths_for(version: GtexVersion, complete: bool = False) -> dict[str, Path]:
     ----------
     version : "v8" or "v10"
     complete : bool, default False
-        If True, derived outputs (normalized, sets, jaccard, migration,
-        threshold_sweep, plots, ppi) are routed to ``output/{version}_complete``
+        If True, derived outputs (normalized, sets, jaccard,
+        threshold_sensitivity) are routed to ``output/{version}_complete``
         instead of ``output/{version}``. This keeps the complete-age-bins
         analysis fully separate from the all-tissues analysis so neither
         overwrites the other.
@@ -85,14 +79,15 @@ def paths_for(version: GtexVersion, complete: bool = False) -> dict[str, Path]:
         raise ValueError(f"Unknown GTEx version: {version}")
     out_name = f"{version}_complete" if complete else version
     out = OUTPUT_DIR / out_name
+    # Optional exact paper inputs; inherited by validation worker processes.
+    input_dir = (Path(os.environ["STAMP_VALIDATION_INPUT_DIR"])
+                 if version == "v10" and os.environ.get("STAMP_VALIDATION_INPUT_DIR")
+                 else PARQUET_DIR / version)
     return {
-        "tpm_parquet": PARQUET_DIR / version / "tpm_matrix.parquet",
-        "metadata_parquet": PARQUET_DIR / version / "metadata.parquet",
+        "tpm_parquet": input_dir / "tpm_matrix.parquet",
+        "metadata_parquet": input_dir / "metadata.parquet",
         "normalized": out / "normalized",
         "sets": out / "sets",
         "jaccard": out / "jaccard",
-        "ppi": out / "ppi",
-        "migration": out / "migration",
-        "threshold_sweep": out / "threshold_sweep",
-        "plots": out / "plots",
+        "threshold_sensitivity": out / "threshold_sensitivity",
     }

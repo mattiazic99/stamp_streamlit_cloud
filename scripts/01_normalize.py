@@ -30,6 +30,9 @@ from pathlib import Path
 import pandas as pd
 from tqdm import tqdm
 
+# Support direct execution without installing stamp.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from stamp.config import EPSILON, GtexVersion, paths_for
 from stamp.io import (
     _safe_filename,

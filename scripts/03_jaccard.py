@@ -20,6 +20,9 @@ from pathlib import Path
 
 import pandas as pd
 
+# Support direct execution without installing stamp.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from stamp.config import GtexVersion, paths_for
 from stamp.io import load_sets_txt
 from stamp.jaccard import tissue_similarity_age, tissue_similarity_life

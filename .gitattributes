@@ -1,2 +1,15 @@
-# Auto detect text files and perform LF normalization
+# Normalise line endings for text, so the repository is identical on
+# Windows, macOS and Linux.
 * text=auto
+
+# The pre-computed atlas is binary and must never be line-ending normalised.
+*.parquet binary
+*.png      binary
+*.pdf      binary
+
+# The five-line STAMP exchange files are text and diff cleanly.
+*_sets.txt text
+
+# Preserve reference artifact bytes: SHA-256 must survive cross-platform clones.
+reproducibility/reference/** -text
+*.npz binary

@@ -9,13 +9,11 @@ def create_download_button(fig, filename, button_text=None):
     if button_text is None:
         button_text = f"📥 Download {filename}"
     
-    # Save figure to bytes
     img_buffer = io.BytesIO()
     fig.savefig(img_buffer, format='png', dpi=300, bbox_inches='tight', 
                 facecolor='white', edgecolor='none')
     img_buffer.seek(0)
     
-    # Create download button
     st.download_button(
         label=button_text,
         data=img_buffer.getvalue(),
@@ -44,7 +42,6 @@ def create_excel_download(df, filename, button_text=None, sheet_name='Data'):
     if button_text is None:
         button_text = f"📥 Download {filename}"
     
-    # Create Excel file in memory
     excel_buffer = io.BytesIO()
     with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
         df.to_excel(writer, sheet_name=sheet_name, index=True)
@@ -65,7 +62,6 @@ def create_multiple_csv_download(dataframes_dict, zip_filename, button_text=None
     
     import zipfile
     
-    # Create ZIP file in memory
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         for name, df in dataframes_dict.items():

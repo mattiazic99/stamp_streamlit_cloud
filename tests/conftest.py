@@ -1,1 +1,1 @@
-"""Shared pytest fixtures for the STAMP test suite."""
+"""Fixtures used across the STAMP pipeline tests."""

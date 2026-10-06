@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "files": {
+    "tpm_matrix.parquet": {
+      "bytes": 4010337254,
+      "sha256": "1ebf1bae1e8b806b54fe57be56f7ab233ea479b2b97a24fb7545c75cb8cf3294",
+      "parts": [
+        {
+          "name": "tpm_matrix.parquet.part01",
+          "bytes": 536870912,
+          "sha256": "83835247db022a89571e0d2701c1f8172e2758fa1e5cb79b1fd422e46e308982"
+        },
+        {
+          "name": "tpm_matrix.parquet.part02",
+          "bytes": 536870912,
+          "sha256": "8ddfa0e5af651a312a188d7b63e1ce6fdc5be225ad287711592a48a2050ee503"
+        },
+        {
+          "name": "tpm_matrix.parquet.part03",
+          "bytes": 536870912,
+          "sha256": "f77cef7b9202857ad11891a25d7d21f34c867c81946bac8ef378807e69361c63"
+        },
+        {
+          "name": "tpm_matrix.parquet.part04",
+          "bytes": 536870912,
+          "sha256": "2a23cd860a6345e77536c067b34e068646e3b80ebee16830f75ae392e9ccc188"
+        },
+        {
+          "name": "tpm_matrix.parquet.part05",
+          "bytes": 536870912,
+          "sha256": "39096700265e47aca4c0ad9b0c2356df41a442b92a598332696d7b4cc6146c46"
+        },
+        {
+          "name": "tpm_matrix.parquet.part06",
+          "bytes": 536870912,
+          "sha256": "b1479fc0b1db538c9e7d1a70f47dd23722311f8ec6d5d2475b232bb45e7344bc"
+        },
+        {
+          "name": "tpm_matrix.parquet.part07",
+          "bytes": 536870912,
+          "sha256": "274001df7c7387bd23851e4588802e6011a483b9af1aa463af8158eade24ef18"
+        },
+        {
+          "name": "tpm_matrix.parquet.part08",
+          "bytes": 252240870,
+          "sha256": "becbe1604a0487a8e56659c076870ed755e3eacd565b97003cfafef5495b8e81"
+        }
+      ]
+    },
+    "metadata.parquet": {
+      "bytes": 475274,
+      "sha256": "66b5ef6a8aa0aafae4b7d2f8dadd0d0c7eb156db74d5939c7d5cc94f41362822",
+      "parts": [
+        {
+          "name": "metadata.parquet.part01",
+          "bytes": 475274,
+          "sha256": "66b5ef6a8aa0aafae4b7d2f8dadd0d0c7eb156db74d5939c7d5cc94f41362822"
+        }
+      ]
+    }
+  }
+}

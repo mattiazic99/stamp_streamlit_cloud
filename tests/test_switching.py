@@ -16,9 +16,7 @@ from stamp.switching import (
 )
 
 
-# ---------------------------------------------------------------------------
 # identify_switching_with_direction: coherent with identify_switching_genes
-# ---------------------------------------------------------------------------
 
 def _toy_norm():
     # g_up: low->high at 40-49; g_down: high->low at 60-69; g_const: no switch;
@@ -56,9 +54,7 @@ def test_direction_labels_up_and_down():
     assert "g_osc" not in flat
 
 
-# ---------------------------------------------------------------------------
 # is_switching_gene: low-to-high vectors at every valid k
-# ---------------------------------------------------------------------------
 
 def test_low_to_high_at_bracket_2():
     # k=1 in 0-indexed; switch happens between bracket 0 and bracket 1
@@ -81,9 +77,7 @@ def test_low_to_high_at_bracket_6():
     assert is_switching_gene([0, 0, 0, 0, 0, 1]) is True
 
 
-# ---------------------------------------------------------------------------
 # is_switching_gene: high-to-low vectors at every valid k
-# ---------------------------------------------------------------------------
 
 def test_high_to_low_at_bracket_2():
     assert is_switching_gene([1, 0, 0, 0, 0, 0]) is True
@@ -105,9 +99,7 @@ def test_high_to_low_at_bracket_6():
     assert is_switching_gene([1, 1, 1, 1, 1, 0]) is True
 
 
-# ---------------------------------------------------------------------------
 # is_switching_gene: NOT switching cases
-# ---------------------------------------------------------------------------
 
 def test_constant_zero_is_not_switching():
     assert is_switching_gene([0, 0, 0, 0, 0, 0]) is False
@@ -142,9 +134,7 @@ def test_short_vector_edge_case():
     assert is_switching_gene([1, 1]) is False
 
 
-# ---------------------------------------------------------------------------
 # is_switching_gene: input validation
-# ---------------------------------------------------------------------------
 
 def test_rejects_too_short():
     with pytest.raises(ValueError, match="length >= 2"):
@@ -161,9 +151,7 @@ def test_rejects_non_1d_array():
         is_switching_gene(np.array([[0, 1], [1, 0]]))
 
 
-# ---------------------------------------------------------------------------
 # get_switching_bracket
-# ---------------------------------------------------------------------------
 
 def test_get_switching_bracket_low_to_high():
     # ATP11C in artery coronary (paper Figure 1): switches at index 2 (40-49)
@@ -193,9 +181,7 @@ def test_get_switching_bracket_min_and_max_positions():
     assert get_switching_bracket([0, 0, 0, 0, 0, 1]) == 5
 
 
-# ---------------------------------------------------------------------------
 # identify_switching_genes: end-to-end on small DataFrames
-# ---------------------------------------------------------------------------
 
 def test_identify_switching_genes_basic():
     df = pd.DataFrame(

@@ -2,14 +2,14 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
-from utils.parsing import parse_stamp_file, extract_tissue_name  # Import della funzione di pulizia
+from utils.parsing import parse_stamp_file, extract_tissue_name
 from components.downloads import create_csv_download, display_download_section
 
 # Canonical age-group order
 _AGE_ORDER = ["30–39", "40–49", "50–59", "60–69", "70–79"]
 
 
-# ── Plotly chart config ──
+# Plotly toolbar options.
 def _plotly_cfg(filename="chart"):
     return {
         "toImageButtonOptions": {"format": "png", "scale": 2, "filename": filename.replace(".png", "")},
@@ -17,10 +17,10 @@ def _plotly_cfg(filename="chart"):
     }
 
 def _download_plotly_as_png(plotly_fig, filename):
-    """Render a working Download PNG button using Plotly.js from CDN."""
+    """Offer a PNG download through Plotly.js loaded from its CDN."""
     import streamlit.components.v1 as _components
     safe_name = filename.replace(".png", "").replace("'", r"\'")
-    fig_json = plotly_fig.to_json().replace("</", r"<\/")   # prevent HTML injection
+    fig_json = plotly_fig.to_json().replace("</", r"<\/")   # Escape labels before inserting them into HTML.
     html = (
         '<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>'
         '<div id="hc" style="position:absolute;left:-9999px;width:1200px;height:600px;"></div>'
@@ -54,80 +54,38 @@ def show():
     
     age_groups = ["30–39", "40–49", "50–59", "60–69", "70–79"]
 
-    # Track whether we are on pre-computed GTEx data (so we can read the
-    # canonical Jaccard matrices instead of recomputing them client-side).
-    preloaded = False
-    version = None
+    st.markdown("""
+    <div class="analysis-section">
+        <h3>📂 Upload Two Tissues for Comparison</h3>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # ── Data source toggle ─────────────────────────────────────────
-    import sys as _sys
-    from pathlib import Path as _Path
-    _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
-    from data_loader import get_available_tissues, get_sets_for_tissue, sets_to_gui_format, complete_mode
+    col1, col2 = st.columns(2)
+    with col1:
+        file1 = st.file_uploader(
+            "📊 First Tissue",
+            type=["txt"],
+            key="tissue1_comp",
+            help="Upload first tissue gene switching data"
+        )
+    with col2:
+        file2 = st.file_uploader(
+            "📊 Second Tissue",
+            type=["txt"],
+            key="tissue2_comp",
+            help="Upload second tissue gene switching data"
+        )
 
-    # Pre-loaded (GTEx) mode removed by design: users always upload their files.
-    data_source = "📂 Upload files"
+    if not (file1 and file2):
+        st.info("👆 Please upload both tissue files to start the comparison.")
+        return
 
-    complete = complete_mode()
+    fasce1, counts1, df1 = parse_stamp_file(file1, age_groups)
+    fasce2, counts2, df2 = parse_stamp_file(file2, age_groups)
+    tissue1_name = extract_tissue_name(file1.name)
+    tissue2_name = extract_tissue_name(file2.name)
 
-    if data_source == "📦 Pre-loaded (GTEx)":
-        preloaded = True
-        version = st.session_state.get("gtex_version", "v10")
-        tissues = get_available_tissues(version, complete)
 
-        st.markdown(f"""
-        <div class="analysis-section">
-            <h3>🧪 Select Two Tissues — GTEx {version}</h3>
-        </div>
-        """, unsafe_allow_html=True)
-
-        col1, col2 = st.columns(2)
-        with col1:
-            tissue1 = st.selectbox("📊 First Tissue", tissues, index=0, key="tc_tissue1")
-        with col2:
-            default_idx = min(1, len(tissues) - 1)
-            tissue2 = st.selectbox("📊 Second Tissue", tissues, index=default_idx, key="tc_tissue2")
-
-        sets1 = get_sets_for_tissue(version, tissue1, complete)
-        sets2 = get_sets_for_tissue(version, tissue2, complete)
-        fasce1, counts1, df1 = sets_to_gui_format(sets1)
-        fasce2, counts2, df2 = sets_to_gui_format(sets2)
-        tissue1_name = tissue1
-        tissue2_name = tissue2
-
-    else:
-        st.markdown("""
-        <div class="analysis-section">
-            <h3>📂 Upload Two Tissues for Comparison</h3>
-        </div>
-        """, unsafe_allow_html=True)
-
-        col1, col2 = st.columns(2)
-        with col1:
-            file1 = st.file_uploader(
-                "📊 First Tissue", 
-                type=["txt"], 
-                key="tissue1_comp",
-                help="Upload first tissue gene switching data"
-            )
-        with col2:
-            file2 = st.file_uploader(
-                "📊 Second Tissue", 
-                type=["txt"], 
-                key="tissue2_comp",
-                help="Upload second tissue gene switching data"
-            )
-
-        if not (file1 and file2):
-            st.info("👆 Please upload both tissue files to start the comparison.")
-            return
-
-        fasce1, counts1, df1 = parse_stamp_file(file1, age_groups)
-        fasce2, counts2, df2 = parse_stamp_file(file2, age_groups)
-        tissue1_name = extract_tissue_name(file1.name)
-        tissue2_name = extract_tissue_name(file2.name)
-    
-    # Age group selection
     st.markdown("### 🎯 Age Group Selection")
     selected_ages = st.multiselect(
         "Select age groups for comparison:",
@@ -140,7 +98,6 @@ def show():
         st.warning("⚠️ Please select at least one age group.")
         return
     
-    # Filter data
     df1_filtered = df1[df1["Age"].isin(selected_ages)]
     df2_filtered = df2[df2["Age"].isin(selected_ages)]
     
@@ -153,49 +110,22 @@ def show():
         for age in age_groups if age in selected_ages
     ]
     
-    # === COMPARISON METRICS ===
+    # Comparison metrics
     st.markdown("""
     <div class="analysis-section">
         <h2>📊 Comparison Overview</h2>
     </div>
     """, unsafe_allow_html=True)
     
-    # Calculate overall statistics
     total_genes_1 = len(set(df1["Gene"]))
     total_genes_2 = len(set(df2["Gene"]))
     common_genes = len(set(df1["Gene"]) & set(df2["Gene"]))
     unique_genes = len(set(df1["Gene"]) | set(df2["Gene"]))
 
-    # ── Jaccard: prefer the PRE-COMPUTED backend matrices ───────────
-    # In pre-loaded (GTEx) mode the canonical J_life / J_age values come
-    # from output/{version}/jaccard/jaccard_{life,age}.csv — the same
-    # matrices used by the paper and the v8-vs-v10 page. We read them here
-    # instead of recomputing, so the GUI never shows a value that drifts
-    # from the published one. In upload mode (no matrices) we fall back to
-    # the local computation.
-    j_life_pre = None
-    j_age_pre = None
-    if preloaded:
-        try:
-            from data_loader import get_jaccard_matrix, display_to_safe
-            _s1, _s2 = display_to_safe(tissue1_name), display_to_safe(tissue2_name)
-            _jl = get_jaccard_matrix(version, "life", complete)
-            _ja = get_jaccard_matrix(version, "age", complete)
-            if _s1 in _jl.index and _s2 in _jl.columns:
-                j_life_pre = float(_jl.loc[_s1, _s2])
-            if _s1 in _ja.index and _s2 in _ja.columns:
-                j_age_pre = float(_ja.loc[_s1, _s2])
-        except Exception:
-            pass
+    # Headline similarity: J_life computed on the two uploaded gene sets.
+    jaccard_sim = common_genes / unique_genes if unique_genes > 0 else 0
 
-    # Headline similarity = pre-computed J_life when available, else local.
-    jaccard_sim = (
-        j_life_pre
-        if j_life_pre is not None
-        else (common_genes / unique_genes if unique_genes > 0 else 0)
-    )
-    jaccard_is_precomputed = j_life_pre is not None
-    
+
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.markdown(f"""
@@ -229,25 +159,11 @@ def show():
         </div>
         """, unsafe_allow_html=True)
 
-    if jaccard_is_precomputed:
-        _cap = f"J<sub>life</sub> = {j_life_pre:.4f}"
-        if j_age_pre is not None:
-            _cap += f" · J<sub>age</sub> = {j_age_pre:.4f}"
-        st.caption(
-            f"Pre-computed backend values ({_cap}) from "
-            f"`output/{version}/jaccard/`, identical to the v8-vs-v10 page.",
-            unsafe_allow_html=True,
-        )
-    elif not preloaded:
-        st.caption(
-            "J_life computed from the uploaded files "
-            "(no pre-computed matrix available in upload mode)."
-        )
+    st.caption("J_life computed from the uploaded files.")
 
-    # === SIDE-BY-SIDE COMPARISON CHART (Plotly) ===
+    # SIDE-BY-SIDE COMPARISON CHART (Plotly)
     st.markdown("### 📊 Gene Count Comparison by Age Group")
     
-    # Tissue toggle
     show_tissue = st.radio(
         "Show:",
         options=["both", tissue1_name, tissue2_name],
@@ -334,7 +250,7 @@ def show():
     st.plotly_chart(comp_fig, use_container_width=True, key="tc_bar_comparison", config=_plotly_cfg())
     _download_plotly_as_png(comp_fig, f"comparison_{tissue1_name}_vs_{tissue2_name}.png")
     
-    # === SHARED VS EXCLUSIVE ANALYSIS ===
+    # Shared vs exclusive analysis
     st.markdown("""
     <div class="analysis-section">
         <h2>🤝 Shared vs Exclusive Gene Analysis</h2>
@@ -401,21 +317,13 @@ def show():
         st.plotly_chart(bar_fig, use_container_width=True, key="tc_bar_categories", config=_plotly_cfg())
         _download_plotly_as_png(bar_fig, f"shared_exclusive_{tissue1_name}_vs_{tissue2_name}.png")
     
-    # === AGE-SPECIFIC ANALYSIS ===
+    # Age-specific analysis
     st.markdown("### 📅 Age-Specific Shared Genes Analysis")
 
-    # The per-bracket Jaccard values below are the COMPONENTS of the backend
-    # J_age metric (which is their mean over the brackets populated in both
-    # tissues). The backend stores only the aggregate, so the per-bracket
-    # breakdown is computed here; in pre-loaded mode we show the canonical
-    # aggregate alongside it for reference.
-    if preloaded and j_age_pre is not None:
-        st.caption(
-            f"Backend J<sub>age</sub> (pre-computed) = **{j_age_pre:.4f}** — "
-            "mean of the per-bracket Jaccard values below over the brackets "
-            "populated in both tissues.",
-            unsafe_allow_html=True,
-        )
+    # The per-bracket Jaccard values below are the components of the backend
+    # J_age metric, which is their mean over the brackets populated in both
+    # tissues. The backend stores only the aggregate, so the per-bracket
+    # breakdown is computed here.
 
     # Calculate shared genes for each age group
     age_shared_data = []
@@ -486,7 +394,7 @@ def show():
     st.plotly_chart(line_fig, use_container_width=True, key='tc_line_jaccard', config=_plotly_cfg())
     _download_plotly_as_png(line_fig, f"jaccard_similarity_{tissue1_name}_vs_{tissue2_name}.png")
     
-    # === DOWNLOAD SECTION ===
+    # Download section
     display_download_section("📥 Download Analysis Results")
     
     col1, col2, col3 = st.columns(3)
@@ -525,7 +433,7 @@ def show():
         create_csv_download(exclusive_2_df, f"exclusive_{tissue2_name}.csv", 
                            f"⬇️ {tissue2_name} Exclusive CSV")
     
-    # === DETAILED GENE LISTS ===
+    # Detailed gene lists
     st.markdown("""
     <div class="analysis-section">
         <h2>📋 Detailed Gene Lists</h2>

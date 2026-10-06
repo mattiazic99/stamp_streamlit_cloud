@@ -1,23 +1,12 @@
 """Per-gene min-max normalization and age-bracket averaging.
 
-Implements the canonical normalization (x - min) / (max - min), with an
-epsilon filter that drops genes whose dynamic range is below threshold
-across the tissue's samples.
+For each tissue, keep genes whose sample range exceeds epsilon, apply
+(x - min) / (max - min), then average the normalized values by age bracket.
+Outputs use float32 to limit memory use.
 
-Divergence from the R reference implementation
-----------------------------------------------
-The original R code in `auto_normalized.R` divides by (max - min) WITHOUT
-subtracting min: a non-standard formula that does not produce values in
-[0, 1]. Our Python implementation follows the paper specification
-(page 5: "per-gene min-max normalisation"), which is the canonical
-formula. See docs/divergences_from_R.md.
-
-Memory considerations
----------------------
-All numerical outputs are float32 (sufficient precision for TPM data
-and half the memory of float64). The normalized matrix per tissue is
-designed to fit comfortably in <100 MB even for the largest GTEx tissues.
-"""
+The R reference in auto_normalized.R divides by (max - min) without subtracting
+min. This implementation follows the min-max formula described on page 5 of
+the paper."""
 from __future__ import annotations
 
 import numpy as np
@@ -26,9 +15,7 @@ import pandas as pd
 from stamp.config import AGE_BRACKETS, EPSILON
 
 
-# ---------------------------------------------------------------------------
 # Public API
-# ---------------------------------------------------------------------------
 
 def normalize_tissue(
     tpm_matrix: pd.DataFrame,
@@ -80,16 +67,9 @@ def normalize_tissue(
     """
     _validate_metadata_schema(metadata)
 
-    # Step 1: select the samples for this tissue that will actually contribute
-    # to an age-bracket average. A sample is used only if it
-    #   (a) belongs to the requested tissue,
-    #   (b) has a matching column in the TPM matrix, and
-    #   (c) has a valid age_bracket present in AGE_BRACKETS.
-    # Condition (c) is essential: a sample without a valid bracket never enters
-    # any bracket mean, so it must NOT influence gene_min / gene_max /
-    # gene_range, the epsilon filter, or the min-max scale. Filtering it here
-    # (rather than after normalization) keeps the [0, 1] scale defined only by
-    # the samples that carry signal.
+    # Only samples with a TPM column and a valid age bracket contribute.
+    # Filter before scaling: otherwise unusable samples would change the
+    # min/max range and epsilon filter without entering any bracket mean.
     tissue_meta = metadata.loc[metadata["tissue"] == tissue]
     if tissue_meta.empty:
         raise ValueError(f"No samples found for tissue '{tissue}'")
@@ -162,16 +142,14 @@ def normalize_tissue(
     # Final dtype: float32 to halve memory vs float64
     averaged = averaged.astype(np.float32)
 
-    # Drop genes that ended up all-NaN after averaging (rare but possible if
+    # Drop genes with no remaining values after bracket averaging (e.g. if
     # every kept sample of a gene was NaN in every bracket)
     averaged = averaged.dropna(how="all")
 
     return averaged
 
 
-# ---------------------------------------------------------------------------
 # Internal helpers
-# ---------------------------------------------------------------------------
 
 def _validate_metadata_schema(metadata: pd.DataFrame) -> None:
     """Check that metadata has the columns we need."""

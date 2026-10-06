@@ -3,11 +3,10 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
-from utils.parsing import parse_multiple_stamp_files  # USO PARSING CENTRALIZZATO
+from utils.parsing import parse_multiple_stamp_files  
 from components.downloads import create_csv_download, display_download_section
 
-
-# ── Plotly chart config ──
+# Plotly toolbar options.
 def _plotly_cfg(filename="chart"):
     return {
         "toImageButtonOptions": {"format": "png", "scale": 2, "filename": filename.replace(".png", "")},
@@ -15,10 +14,10 @@ def _plotly_cfg(filename="chart"):
     }
 
 def _download_plotly_as_png(plotly_fig, filename):
-    """Render a working Download PNG button using Plotly.js from CDN."""
+    """Offer a PNG download through Plotly.js loaded from its CDN."""
     import streamlit.components.v1 as _components
     safe_name = filename.replace(".png", "").replace("'", r"\'")
-    fig_json = plotly_fig.to_json().replace("</", r"<\/")   # prevent HTML injection
+    fig_json = plotly_fig.to_json().replace("</", r"<\/")   # Escape labels before inserting them into HTML.
     html = (
         '<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>'
         '<div id="hc" style="position:absolute;left:-9999px;width:1200px;height:600px;"></div>'
@@ -43,7 +42,6 @@ def _download_plotly_as_png(plotly_fig, filename):
     )
     _components.html(html, height=50)
 
-
 def show():
     """Single Gene Analysis Page"""
     
@@ -52,121 +50,72 @@ def show():
     
     age_groups = ["30–39", "40–49", "50–59", "60–69", "70–79"]
     
-    # ── Data source toggle ─────────────────────────────────────────
-    import sys as _sys
-    from pathlib import Path as _Path
-    _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
-    from data_loader import get_available_tissues, get_sets_for_tissue, sets_to_gui_format, sets_to_gene_sets, complete_mode
 
-    # Pre-loaded (GTEx) mode removed by design: users always upload their files.
-    data_source = "📂 Upload files"
+    st.markdown("""
+    <div class="analysis-section">
+        <h3>📂 Upload Multiple Tissue Files</h3>
+        <p>Upload tissue files to track gene expression patterns</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    complete = complete_mode()
+    uploaded_files = st.file_uploader(
+        "📂 Upload STAMP .txt files", 
+        type=["txt"],
+        accept_multiple_files=True, 
+        key="single_gene_files",
+        help="Upload multiple tissue gene switching files"
+    )
 
-    if data_source == "📦 Pre-loaded (GTEx)":
-        version = st.session_state.get("gtex_version", "v10")
-        all_tissues = get_available_tissues(version, complete)
+    if not uploaded_files or len(uploaded_files) < 2:
+        st.info("👆 Please upload at least 2 tissue files for single gene analysis.")
 
-        st.markdown(f"""
-        <div class="analysis-section">
-            <h3>🧪 Select Tissues — GTEx {version}</h3>
-            <p>Select tissues to track gene expression patterns</p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown("### 🔍 Single Gene Analysis Features")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("""
+            **🎯 Gene Tracking:**
+            - Gene presence across tissues
+            - Age-specific expression patterns
+            - Tissue-specific appearance
+            - Expression timeline analysis
+            """)
+        with col2:
+            st.markdown("""
+            **📊 Visualization Options:**
+            - Presence heatmaps
+            - Timeline plots
+            - Tissue distribution charts
+            - Age pattern analysis
+            """)
 
-        selected_tissues = st.multiselect(
-            "Select tissues:",
-            all_tissues,
-            default=all_tissues[:5],
-            key="sg_tissues",
-        )
+        st.markdown("### 💡 Example Gene Searches")
+        example_genes = ["APOE", "TP53", "BRCA1", "EGFR", "MYC", "PTEN", "RB1", "VHL"]
+        st.info(f"Common genes to search: {', '.join(example_genes)}")
+        return
 
-        if not selected_tissues or len(selected_tissues) < 2:
-            st.info("👆 Please select at least 2 tissues for single gene analysis.")
-            return
+    st.success(f"✅ {len(uploaded_files)} tissue files loaded successfully!")
 
-        data_parsed = {}
-        for tissue in selected_tissues:
-            sets_dict = get_sets_for_tissue(version, tissue, complete)
-            _, counts, df = sets_to_gui_format(sets_dict)
-            gene_sets_list = sets_to_gene_sets(sets_dict)
-            data_parsed[tissue] = {
-                'gene_sets': gene_sets_list,
-                'dataframe': df,
-                'counts': counts,
-                'total_genes': sum(len(s) for s in gene_sets_list),
-                'original_filename': f"{tissue}.txt",
-                'clean_name': tissue,
-            }
-        st.success(f"✅ {len(selected_tissues)} tissues loaded from GTEx {version}!")
-
-    else:
-        st.markdown("""
-        <div class="analysis-section">
-            <h3>📂 Upload Multiple Tissue Files</h3>
-            <p>Upload tissue files to track gene expression patterns</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        uploaded_files = st.file_uploader(
-            "📂 Upload STAMP .txt files", 
-            type=["txt"],
-            accept_multiple_files=True, 
-            key="single_gene_files",
-            help="Upload multiple tissue gene switching files"
-        )
-
-        if not uploaded_files or len(uploaded_files) < 2:
-            st.info("👆 Please upload at least 2 tissue files for single gene analysis.")
-
-            st.markdown("### 🔍 Single Gene Analysis Features")
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown("""
-                **🎯 Gene Tracking:**
-                - Gene presence across tissues
-                - Age-specific expression patterns
-                - Tissue-specific appearance
-                - Expression timeline analysis
-                """)
-            with col2:
-                st.markdown("""
-                **📊 Visualization Options:**
-                - Presence heatmaps
-                - Timeline plots
-                - Tissue distribution charts
-                - Age pattern analysis
-                """)
-
-            st.markdown("### 💡 Example Gene Searches")
-            example_genes = ["APOE", "TP53", "BRCA1", "EGFR", "MYC", "PTEN", "RB1", "VHL"]
-            st.info(f"Common genes to search: {', '.join(example_genes)}")
-            return
-
-        st.success(f"✅ {len(uploaded_files)} tissue files loaded successfully!")
-
-        result = parse_multiple_stamp_files(uploaded_files, age_groups)
-        _rejected = result['summary'].get('rejected_files', [])
-        if _rejected:
-            for _rej in _rejected:
-                st.error(
-                    f"❌ **{_rej['filename']}** is not a valid STAMP file:\n\n"
-                    + "\n".join(f"- {e}" for e in _rej.get('errors', []))
-                )
-            st.info(
-                "ℹ️ **STAMP format**: each file must have exactly **5 lines** "
-                "(one per age group), with **space-separated gene names** on each line."
+    result = parse_multiple_stamp_files(uploaded_files, age_groups)
+    _rejected = result['summary'].get('rejected_files', [])
+    if _rejected:
+        for _rej in _rejected:
+            st.error(
+                f"❌ **{_rej['filename']}** is not a valid STAMP file:\n\n"
+                + "\n".join(f"- {e}" for e in _rej.get('errors', []))
             )
+        st.info(
+            "ℹ️ **STAMP format**: each file must have exactly **5 lines** "
+            "(one per age group), with **space-separated gene names** on each line."
+        )
 
-        data_parsed = result['data']
+    data_parsed = result['data']
 
-    # Estrai tessuti e converti formato per compatibilità
+    # Extract the tissues and reshape into the analysis-helper format.
     tissues = list(data_parsed.keys())
     data = {}
     for tissue in tissues:
         data[tissue] = data_parsed[tissue]['gene_sets']
     
-    # Create comprehensive gene list
     all_genes = set()
     for tissue in tissues:
         for age_set in data[tissue]:
@@ -174,7 +123,6 @@ def show():
     
     all_genes = sorted(list(all_genes))
     
-    # Gene search section
     st.markdown("""
     <div class="analysis-section">
         <h2>🔬 Gene Search and Analysis</h2>
@@ -184,7 +132,6 @@ def show():
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        # Gene input methods
         search_method = st.radio(
             "🔍 Gene Search Method:",
             ["Manual Input", "Select from List", "Multiple Genes"],
@@ -207,7 +154,7 @@ def show():
             )
             genes_to_analyze = [gene_input] if gene_input else []
             
-        else:  # Multiple Genes
+        else:  
             genes_input = st.text_area(
                 "🧬 Enter multiple gene names (one per line):",
                 placeholder="APOE\nTP53\nBRCA1",
@@ -238,7 +185,6 @@ def show():
         </div>
         """, unsafe_allow_html=True)
     
-    # Analysis options
     if genes_to_analyze and genes_to_analyze != ['']:
         st.markdown("### ⚙️ Analysis Options")
         
@@ -263,7 +209,7 @@ def show():
         
         st.success(f"✅ Analyzing {len(valid_genes)} gene(s): {', '.join(valid_genes)}")
         
-        # === MAIN ANALYSIS ===
+        # Main analysis
         for gene_idx, gene in enumerate(valid_genes):
             if len(valid_genes) > 1:
                 st.markdown(f"""
@@ -282,12 +228,10 @@ def show():
                     presence_matrix[i, j] = 1 if is_present else 0
                     presence_text.iloc[i, j] = "✅" if is_present else "❌"
             
-            # Gene statistics
             total_appearances = np.sum(presence_matrix)
             tissues_with_gene = np.sum(np.any(presence_matrix, axis=1))
             ages_with_gene = np.sum(np.any(presence_matrix, axis=0))
             
-            # Display statistics
             col1, col2, col3, col4 = st.columns(4)
             with col1:
                 st.markdown(f"""
@@ -326,7 +270,6 @@ def show():
             if show_heatmap:
                 st.markdown(f"### 🔥 Presence Heatmap - {gene}")
                 
-                # Build hover text & display text
                 hover = []
                 text_disp = []
                 for i, tissue in enumerate(tissues):
@@ -428,7 +371,6 @@ def show():
                                key=f"sg_barh_tissue_{gene}_{gene_idx}", config=_plotly_cfg())
                 _download_plotly_as_png(barh_fig, f"tissue_distribution_{gene}.png")
             
-            # Detailed statistics table
             if show_statistics:
                 st.markdown(f"### 📊 Detailed Statistics - {gene}")
                 
@@ -545,7 +487,7 @@ def show():
             if gene_idx < len(valid_genes) - 1:
                 st.markdown("---")
         
-        # === MULTI-GENE COMPARISON ===
+        # Multi-gene comparison
         if len(valid_genes) > 1:
             st.markdown("""
             <div class="analysis-section">
@@ -625,7 +567,7 @@ def show():
             create_csv_download(df_comparison, "multi_gene_comparison.csv", 
                                "⬇️ Multi-Gene Comparison CSV")
         
-        # === GLOBAL DOWNLOAD SECTION ===
+        # Global download section
         if len(valid_genes) > 0:
             display_download_section("📥 Download All Results")
             

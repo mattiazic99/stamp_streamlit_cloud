@@ -1,24 +1,12 @@
-"""Panel & Reproducibility Explorer.
+"""Map a gene panel onto switching events in GTEx v8 and v10.
 
-Query the pre-computed switching atlas with a *custom gene panel* and see,
-in a single view:
+Events are classified as conserved, shifted to another age bracket, or present
+in only one release. Unresolved symbols and genes absent from the atlas are
+reported separately: absence is not evidence that a gene does not change with age.
 
-  1. **Selectivity** — which panel genes are represented in the atlas vs which
-     are queried-but-absent (so "absent" is never mis-read as "does not change
-     with age"). Genes whose symbol cannot be resolved to an Ensembl ID are
-     reported separately.
-
-  2. **Event map** — for every (gene, tissue) the age bracket at which the
-     switching event occurs.
-
-  3. **v8 / v10 reproducibility** — each event is colour-coded as conserved
-     (same bracket in both releases), shifted (present in both but at a
-     different bracket), or single-release (present in only one release).
-
-Nothing is recomputed: switching events are read straight from the pre-computed
-``*_sets.txt`` files via ``data_loader`` — the same source used by every other
-page. Both GTEx releases are always loaded so the concordance is independent of
-the global version selector.
+At the default threshold, events come from the bundled sets files. Other
+thresholds recompute events from normalized matrices using the backend switching
+rule. This is the only page that reads v8; the other pages use v10.
 """
 from __future__ import annotations
 
@@ -32,10 +20,10 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from data_loader import (  # noqa: E402
+    COMPLETE_AGE_BINS,
     get_available_tissues,
     get_sets_for_tissue,
     get_normalized_tissue,
-    complete_mode,
 )
 
 try:
@@ -50,7 +38,7 @@ except Exception:  # pragma: no cover - defensive fallback
     identify_switching_genes = None
 
 
-# ── Defaults: the Alzheimer's-disease example panel ────────────────────────
+# Defaults: the Alzheimer's-disease example panel
 _DEFAULT_PANEL = [
     "APP", "PSEN1", "MAPT", "APOE", "TREM2", "BIN1",   # neurodegeneration
     "IL6", "TNF", "NFKB1", "STAT3",                     # neuroinflammation
@@ -81,7 +69,7 @@ def _plotly_cfg(fn="panel_explorer"):
     }
 
 
-# ── Symbol ↔ Ensembl mapping (built once from gui/data/all_genes.txt) ──────
+# Symbol ↔ Ensembl mapping (built once from gui/data/all_genes.txt)
 @st.cache_data(ttl=3600)
 def _load_symbol_map() -> tuple[dict[str, set[str]], dict[str, str]]:
     """Return (symbol_upper -> {unversioned ENSG}, unversioned ENSG -> symbol).
@@ -157,11 +145,12 @@ def show():
     st.header("🧩 Panel & Reproducibility Explorer")
     st.markdown(
         "Query the switching atlas with a **custom gene panel** and see its "
-        "selectivity and **v8/v10 reproducibility** in one view. Both GTEx "
-        "releases are always loaded, regardless of the global version selector."
+        "selectivity and **v8/v10 reproducibility** in one view. This is the "
+        "only page that reads GTEx v8, and it does so purely as a "
+        "release-level reproducibility check on the v10 results."
     )
 
-    complete = complete_mode()
+    complete = COMPLETE_AGE_BINS
     if complete:
         st.info(
             "🧪 **Complete age-bins mode**: only tissues with samples in all "
@@ -184,7 +173,7 @@ def show():
         return
     all_tissues = sorted(tissues_v8 | tissues_v10)
 
-    # ── Inputs ────────────────────────────────────────────────────────────
+    # Inputs
     c1, c2 = st.columns([1, 1])
     with c1:
         panel_raw = st.text_area(
@@ -202,7 +191,7 @@ def show():
             help="Default = AD-relevant CNS regions + peripheral immune tissues.",
         )
 
-    # ── Threshold (tau) ───────────────────────────────────────────────────
+    # Threshold (tau)
     tau = st.slider(
         "🎚️ Switching threshold τ (binarisation cut-off)",
         min_value=0.05, max_value=0.95, value=float(DEFAULT_THRESHOLD), step=0.05,
@@ -230,11 +219,11 @@ def show():
     ev_v8 = _events_for_version("v8", tissues_tuple, complete, tau)
     ev_v10 = _events_for_version("v10", tissues_tuple, complete, tau)
 
-    # ── Resolve symbols ───────────────────────────────────────────────────
+    # Resolve symbols
     unresolved = [g for g in panel if g not in sym2ens]
     resolved = [g for g in panel if g in sym2ens]
 
-    # ── Build per-(gene, tissue) status + long-form records ───────────────
+    # Build per-(gene, tissue) status + long-form records
     records = []                      # long table rows
     status = {}                       # (gene, tissue) -> code
     celltext = {}                     # (gene, tissue) -> annotation
@@ -270,7 +259,7 @@ def show():
     present = sorted(genes_with_event)
     absent = [g for g in resolved if g not in genes_with_event]
 
-    # ── Selectivity summary ───────────────────────────────────────────────
+    # Selectivity summary
     st.markdown('<div class="analysis-section"><h2>🎯 Selectivity</h2></div>',
                 unsafe_allow_html=True)
     m1, m2, m3, m4 = st.columns(4)
@@ -298,7 +287,7 @@ def show():
         st.info("None of the resolved panel genes switch in the selected tissues.")
         return
 
-    # ── Reproducibility heatmap (genes × tissues) ─────────────────────────
+    # Reproducibility heatmap (genes × tissues)
     st.markdown('<div class="analysis-section"><h2>🗺️ Event map & v8/v10 '
                 'reproducibility</h2></div>', unsafe_allow_html=True)
 
@@ -351,7 +340,7 @@ def show():
     )
     st.markdown(legend, unsafe_allow_html=True)
 
-    # ── Per-gene reproducibility class ────────────────────────────────────
+    # Per-gene reproducibility class
     st.markdown('<div class="analysis-section"><h2>📋 Per-gene reproducibility'
                 '</h2></div>', unsafe_allow_html=True)
 
@@ -381,7 +370,7 @@ def show():
     ).reset_index(drop=True)
     st.dataframe(cls_df, use_container_width=True, hide_index=True)
 
-    # ── Long event table + download ───────────────────────────────────────
+    # Long event table + download
     if records:
         ev_df = pd.DataFrame(records).sort_values(
             ["Gene", "Tissue"]).reset_index(drop=True)
@@ -393,7 +382,7 @@ def show():
             "panel_switching_events.csv", "text/csv", key="pe_dl",
         )
 
-    # ── Interpretation caveats ────────────────────────────────────────────
+    # Interpretation caveats
     st.info(
         "ℹ️ **How to read this page.** An *absent* gene is one not represented "
         "in the switching atlas under the applied criteria — this is **not** "

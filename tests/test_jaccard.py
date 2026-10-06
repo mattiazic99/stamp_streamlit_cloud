@@ -14,9 +14,7 @@ from stamp.jaccard import (
 )
 
 
-# ---------------------------------------------------------------------------
 # Low-level jaccard()
-# ---------------------------------------------------------------------------
 
 def test_jaccard_identical_sets():
     assert jaccard({"a", "b", "c"}, {"a", "b", "c"}) == 1.0
@@ -46,9 +44,7 @@ def test_jaccard_subset():
     assert jaccard({"a", "b"}, {"a", "b", "c", "d"}) == 0.5
 
 
-# ---------------------------------------------------------------------------
 # jaccard_age_pair: per-pair similarity averaged across brackets
-# ---------------------------------------------------------------------------
 
 def test_age_pair_identical_tissues():
     sets = {
@@ -92,23 +88,15 @@ def test_age_pair_missing_bracket_in_one_tissue():
 
 
 def test_age_pair_no_common_brackets():
-    # Pathological edge case: no shared brackets at all
+    # No shared age brackets.
     a = {"30-39": ["g1"]}
     b = {"50-59": ["g1"]}
-    # No bracket is in both dicts
-    # ... but the way `b` is defined here, only 50-59. The function
-    # iterates over SWITCHING_BRACKETS. The intersection of keys is
-    # empty -> returns 0.0
-    # However in this case both ARE in SWITCHING_BRACKETS and they
-    # are different. The function should find no bracket present
-    # in BOTH dicts. Let's check.
+    # Matching gene IDs do not contribute when the tissues share no brackets.
     result = jaccard_age_pair(a, b)
     assert result == 0.0
 
 
-# ---------------------------------------------------------------------------
 # jaccard_life_pair: union over brackets
-# ---------------------------------------------------------------------------
 
 def test_life_pair_identical():
     sets = {"30-39": ["g1"], "40-49": ["g2"], "50-59": ["g3"],
@@ -135,9 +123,7 @@ def test_life_pair_empty_tissues():
     assert jaccard_life_pair(a, b) == 0.0
 
 
-# ---------------------------------------------------------------------------
 # Full matrices
-# ---------------------------------------------------------------------------
 
 def test_similarity_age_matrix_shape_and_diagonal():
     sets_by_tissue = {

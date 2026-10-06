@@ -22,9 +22,7 @@ def _meta(rows: list[tuple[str, str]]) -> pd.DataFrame:
     )
 
 
-# ---------------------------------------------------------------------------
 # tissues_with_complete_age_bins
-# ---------------------------------------------------------------------------
 
 def test_includes_tissue_with_all_six_brackets():
     rows = [("Liver", b) for b in AGE_BRACKETS]            # all 6
@@ -74,9 +72,7 @@ def test_missing_columns_raises():
         tissues_with_complete_age_bins(pd.DataFrame({"tissue": ["X"]}))
 
 
-# ---------------------------------------------------------------------------
 # common_complete_tissues (v8 vs v10 like-for-like)
-# ---------------------------------------------------------------------------
 
 def test_common_complete_is_intersection():
     # v8: A,B complete (C missing a bracket).  v10: A,C complete (B missing).
@@ -93,15 +89,13 @@ def test_common_complete_is_intersection():
     assert common_complete_tissues(m8, m10) == ["A"]
 
 
-# ---------------------------------------------------------------------------
 # paths_for routing
-# ---------------------------------------------------------------------------
 
 def test_paths_for_complete_routes_to_separate_dir():
     normal = paths_for("v10", complete=False)
     comp = paths_for("v10", complete=True)
     # Derived outputs go to a separate *_complete directory.
-    for key in ("normalized", "sets", "jaccard", "migration", "threshold_sweep"):
+    for key in ("normalized", "sets", "jaccard", "threshold_sensitivity"):
         assert normal[key].parent.name == "v10"
         assert comp[key].parent.name == "v10_complete"
 

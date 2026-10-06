@@ -3,11 +3,10 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
-from utils.parsing import parse_multiple_stamp_files  # USO PARSING CENTRALIZZATO
+from utils.parsing import parse_multiple_stamp_files  
 from components.downloads import create_csv_download, display_download_section, create_multiple_csv_download
 
-
-# ── Plotly chart config ──
+# Plotly toolbar options.
 def _plotly_cfg(filename="chart"):
     return {
         "toImageButtonOptions": {"format": "png", "scale": 2, "filename": filename.replace(".png", "")},
@@ -15,10 +14,10 @@ def _plotly_cfg(filename="chart"):
     }
 
 def _download_plotly_as_png(plotly_fig, filename):
-    """Render a working Download PNG button using Plotly.js from CDN."""
+    """Offer a PNG download through Plotly.js loaded from its CDN."""
     import streamlit.components.v1 as _components
     safe_name = filename.replace(".png", "").replace("'", r"\'")
-    fig_json = plotly_fig.to_json().replace("</", r"<\/")   # prevent HTML injection
+    fig_json = plotly_fig.to_json().replace("</", r"<\/")   # Escape labels before inserting them into HTML.
     html = (
         '<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>'
         '<div id="hc" style="position:absolute;left:-9999px;width:1200px;height:600px;"></div>'
@@ -43,8 +42,7 @@ def _download_plotly_as_png(plotly_fig, filename):
     )
     _components.html(html, height=50)
 
-
-# ── helper: Plotly heatmap (tissue × tissue, full or masked) ──
+# Tissue heatmap with an optional mask.
 def _interactive_heatmap_tissue(matrix, labels, title, colorbar_label,
                                  cmap="rdbu", mask_upper=False,
                                  fmt="float", key=None,
@@ -101,7 +99,6 @@ def _interactive_heatmap_tissue(matrix, labels, title, colorbar_label,
         st.plotly_chart(fig, use_container_width=True, key=key, config=_plotly_cfg())
     _download_plotly_as_png(fig, f"{title.replace(' ', '_')[:60]}.png")
 
-
 def show():
     """Group Comparison Analysis Page"""
     
@@ -110,136 +107,79 @@ def show():
     
     age_groups = ["30–39", "40–49", "50–59", "60–69", "70–79"]
     
-    # ── Data source toggle ─────────────────────────────────────────
-    import sys as _sys
-    from pathlib import Path as _Path
-    _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
-    from data_loader import get_available_tissues, get_sets_for_tissue, sets_to_gui_format, sets_to_gene_sets, complete_mode
 
-    # Pre-loaded (GTEx) mode removed by design: users always upload their files.
-    data_source = "📂 Upload files"
+    st.markdown("""
+    <div class="analysis-section">
+        <h3>📂 Upload Multiple Tissue Files</h3>
+        <p>Upload tissue files to create and compare custom groups</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    complete = complete_mode()
+    uploaded_files = st.file_uploader(
+        "📂 Upload STAMP .txt files", 
+        type=["txt"],
+        accept_multiple_files=True, 
+        key="group_comparison_files",
+        help="Upload multiple tissue gene switching files for group comparison"
+    )
 
-    if data_source == "📦 Pre-loaded (GTEx)":
-        version = st.session_state.get("gtex_version", "v10")
-        all_tissues = get_available_tissues(version, complete)
+    if not uploaded_files or len(uploaded_files) < 4:
+        st.info("👆 Please upload at least 4 tissue files to enable group comparison analysis.")
 
-        st.markdown(f"""
-        <div class="analysis-section">
-            <h3>🧪 Select Tissues — GTEx {version}</h3>
-            <p>Select at least 4 tissues to create and compare custom groups</p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown("### 👥 Group Comparison Features")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("""
+            **🎯 Group Analysis:**
+            - Custom tissue grouping
+            - Inter-group comparisons
+            - Shared vs exclusive genes
+            - Statistical significance testing
+            """)
+        with col2:
+            st.markdown("""
+            **📊 Comparison Metrics:**
+            - Jaccard similarity
+            - Gene overlap percentages
+            - Group-specific patterns
+            - Multi-group intersections
+            """)
 
-        selected_tissues = st.multiselect(
-            "Select tissues:",
-            all_tissues,
-            default=all_tissues[:6],
-            key="gc_tissues",
-        )
+        st.markdown("### 💡 Example Group Comparisons")
+        examples = [
+            "**Organ Systems**: Heart, Liver, Kidney vs Brain, Muscle, Lung",
+            "**Metabolic vs Structural**: Liver, Pancreas vs Bone, Cartilage", 
+            "**Central vs Peripheral**: Brain, Spinal Cord vs Skin, Muscle",
+            "**High vs Low Metabolism**: Heart, Brain, Liver vs Bone, Skin"
+        ]
+        for example in examples:
+            st.markdown(f"- {example}")
+        return
 
-        if not selected_tissues or len(selected_tissues) < 4:
-            st.info("👆 Please select at least 4 tissues for group comparison analysis.")
-            return
+    st.success(f"✅ {len(uploaded_files)} tissue files loaded successfully!")
 
-        data_parsed = {}
-        for tissue in selected_tissues:
-            sets_dict = get_sets_for_tissue(version, tissue, complete)
-            _, counts, df = sets_to_gui_format(sets_dict)
-            gene_sets_list = sets_to_gene_sets(sets_dict)
-            data_parsed[tissue] = {
-                'gene_sets': gene_sets_list,
-                'dataframe': df,
-                'counts': counts,
-                'total_genes': sum(len(s) for s in gene_sets_list),
-                'original_filename': f"{tissue}.txt",
-                'clean_name': tissue,
-            }
-        summary = {
-            'total_files': len(selected_tissues),
-            'successful_parses': len(selected_tissues),
-            'failed_parses': 0,
-            'total_unique_genes': len(set().union(*(set().union(*d['gene_sets']) for d in data_parsed.values()))),
-            'tissue_names': list(data_parsed.keys()),
-            'rejected_files': [],
-        }
-        st.success(f"✅ {len(selected_tissues)} tissues loaded from GTEx {version}!")
-
-    else:
-        st.markdown("""
-        <div class="analysis-section">
-            <h3>📂 Upload Multiple Tissue Files</h3>
-            <p>Upload tissue files to create and compare custom groups</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        uploaded_files = st.file_uploader(
-            "📂 Upload STAMP .txt files", 
-            type=["txt"],
-            accept_multiple_files=True, 
-            key="group_comparison_files",
-            help="Upload multiple tissue gene switching files for group comparison"
-        )
-
-        if not uploaded_files or len(uploaded_files) < 4:
-            st.info("👆 Please upload at least 4 tissue files to enable group comparison analysis.")
-
-            st.markdown("### 👥 Group Comparison Features")
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown("""
-                **🎯 Group Analysis:**
-                - Custom tissue grouping
-                - Inter-group comparisons
-                - Shared vs exclusive genes
-                - Statistical significance testing
-                """)
-            with col2:
-                st.markdown("""
-                **📊 Comparison Metrics:**
-                - Jaccard similarity
-                - Gene overlap percentages
-                - Group-specific patterns
-                - Multi-group intersections
-                """)
-
-            st.markdown("### 💡 Example Group Comparisons")
-            examples = [
-                "**Organ Systems**: Heart, Liver, Kidney vs Brain, Muscle, Lung",
-                "**Metabolic vs Structural**: Liver, Pancreas vs Bone, Cartilage", 
-                "**Central vs Peripheral**: Brain, Spinal Cord vs Skin, Muscle",
-                "**High vs Low Metabolism**: Heart, Brain, Liver vs Bone, Skin"
-            ]
-            for example in examples:
-                st.markdown(f"- {example}")
-            return
-
-        st.success(f"✅ {len(uploaded_files)} tissue files loaded successfully!")
-
-        result = parse_multiple_stamp_files(uploaded_files, age_groups)
-        _rejected = result['summary'].get('rejected_files', [])
-        if _rejected:
-            for _rej in _rejected:
-                st.error(
-                    f"❌ **{_rej['filename']}** is not a valid STAMP file:\n\n"
-                    + "\n".join(f"- {e}" for e in _rej.get('errors', []))
-                )
-            st.info(
-                "ℹ️ **STAMP format**: each file must have exactly **5 lines** "
-                "(one per age group), with **space-separated gene names** on each line."
+    result = parse_multiple_stamp_files(uploaded_files, age_groups)
+    _rejected = result['summary'].get('rejected_files', [])
+    if _rejected:
+        for _rej in _rejected:
+            st.error(
+                f"❌ **{_rej['filename']}** is not a valid STAMP file:\n\n"
+                + "\n".join(f"- {e}" for e in _rej.get('errors', []))
             )
+        st.info(
+            "ℹ️ **STAMP format**: each file must have exactly **5 lines** "
+            "(one per age group), with **space-separated gene names** on each line."
+        )
 
-        data_parsed = result['data']
-        summary = result['summary']
+    data_parsed = result['data']
+    summary = result['summary']
 
-    # Estrai tessuti e converti formato per compatibilità
+    # Extract the tissues and reshape into the analysis-helper format.
     tissues = list(data_parsed.keys())
     data = {}
     for tissue in tissues:
         data[tissue] = data_parsed[tissue]['gene_sets']
     
-    # Group creation section
     st.markdown("""
     <div class="analysis-section">
         <h2>👥 Create Tissue Groups</h2>
@@ -285,12 +225,10 @@ def show():
                 help="Enter a descriptive name for Group 2"
             )
     
-    # Validation
     if len(group1) < 2 or len(group2) < 2:
         st.warning("⚠️ Please select at least 2 tissues for each group to enable comparison.")
         return
     
-    # Analysis scope selection
     st.markdown("### ⚙️ Analysis Options")
     col1, col2 = st.columns(2)
     
@@ -312,7 +250,6 @@ def show():
             help="Choose which metrics to calculate"
         )
     
-    # Group overview
     st.markdown("""
     <div class="analysis-section">
         <h2>📊 Group Overview</h2>
@@ -352,7 +289,7 @@ def show():
         st.write(f"**Total Unique Genes:** {len(group2_genes)}")
         st.write(f"**Average Genes per Tissue:** {len(group2_genes) / len(group2):.1f}")
     
-    # === MAIN COMPARISON ANALYSIS ===
+    # Main comparison analysis
     if analysis_scope in ["Full Lifespan", "Specific Age Group"]:
         perform_group_comparison(
             group1, group2, group1_name, group2_name, 
@@ -547,7 +484,7 @@ def show():
         create_csv_download(df_age_comparison, f"age_comparison_{group1_name}_vs_{group2_name}.csv", 
                            "⬇️ Download Age Comparison CSV")
     
-    # === DOWNLOAD SECTION ===
+    # Download section
     display_download_section("📥 Download Group Comparison Results")
     
     download_data = {}
@@ -575,7 +512,6 @@ def show():
         "⬇️ Download Complete Analysis Package (ZIP)"
     )
 
-
 def perform_group_comparison(group1, group2, group1_name, group2_name, 
                            group1_genes, group2_genes, data, 
                            comparison_metrics, analysis_scope, selected_age=None,
@@ -597,7 +533,6 @@ def perform_group_comparison(group1, group2, group1_name, group2_name,
     jaccard_similarity = len(shared_genes) / len(union_genes) if len(union_genes) > 0 else 0
     overlap_percentage = len(shared_genes) / min(len(group1_genes), len(group2_genes)) * 100 if min(len(group1_genes), len(group2_genes)) > 0 else 0
     
-    # Display main metrics
     col1, col2, col3, col4, col5 = st.columns(5)
     
     with col1:
@@ -640,7 +575,6 @@ def perform_group_comparison(group1, group2, group1_name, group2_name,
         </div>
         """, unsafe_allow_html=True)
     
-    # Visualization section
     st.markdown("### 📊 Visual Comparison")
     
     # 1. Pie chart (Plotly)

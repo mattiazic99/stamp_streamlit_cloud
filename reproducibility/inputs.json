@@ -1,0 +1,26 @@
+{
+  "full": {
+    "files": {
+      "tpm_matrix.parquet": {
+        "bytes": 4010337254,
+        "sha256": "1ebf1bae1e8b806b54fe57be56f7ab233ea479b2b97a24fb7545c75cb8cf3294"
+      },
+      "metadata.parquet": {
+        "bytes": 475274,
+        "sha256": "66b5ef6a8aa0aafae4b7d2f8dadd0d0c7eb156db74d5939c7d5cc94f41362822"
+      }
+    }
+  },
+  "demo": {
+    "files": {
+      "tpm_matrix.parquet": {
+        "bytes": 34317868,
+        "sha256": "dc1f17793f9040be2970bf40ae20ff7f3573cfa918076ef8a80173176938a643"
+      },
+      "metadata.parquet": {
+        "bytes": 42016,
+        "sha256": "ef1c498a51ec3fab379757de0efd7cb44b8076265e6df46a9db3a166554d1593"
+      }
+    }
+  }
+}

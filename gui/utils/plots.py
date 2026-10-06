@@ -7,21 +7,20 @@ from typing import List, Dict, Tuple, Optional, Union
 
 # Configure global responsive settings for Matplotlib
 plt.rcParams.update({
-    'font.size': 14,             # Keep baseline text large so it's readable when scaled down
-    'axes.titlesize': 18,        # Large titles
-    'axes.labelsize': 14,        # Large axis labels
-    'xtick.labelsize': 12,       # Large tick labels
+    'font.size': 14,             # Keep text readable when figures are resized.
+    'axes.titlesize': 18,        
+    'axes.labelsize': 14,        
+    'xtick.labelsize': 12,       
     'ytick.labelsize': 12,
     'legend.fontsize': 12,
     'figure.titlesize': 20,
-    'figure.autolayout': True    # Equivalent to tight_layout globally
+    'figure.autolayout': True    # Use automatic layout for each figure.
 })
 
 def plot_pie_common_vs_exclusive(common: int, excl1: int, excl2: int, 
                                 group1_name: str, group2_name: str,
                                 title: str = None, figsize: Tuple[int, int] = (8, 6)):
-    """
-    Create an enhanced pie chart comparing shared and exclusive genes between two groups
+    """Plot a pie chart comparing shared and exclusive genes between two groups
     
     Args:
         common: Number of shared genes
@@ -30,13 +29,11 @@ def plot_pie_common_vs_exclusive(common: int, excl1: int, excl2: int,
         group1_name: Name of first group
         group2_name: Name of second group
         title: Optional custom title
-        figsize: Figure size tuple
-    """
+        figsize: Figure size tuple"""
     if common + excl1 + excl2 == 0:
         st.warning("No genes to display in pie chart.")
         return
     
-    # Data preparation
     sizes = [common, excl1, excl2]
     labels = [f"Shared\n({common})", 
               f"{group1_name}\nExclusive\n({excl1})", 
@@ -44,20 +41,16 @@ def plot_pie_common_vs_exclusive(common: int, excl1: int, excl2: int,
     colors = ["#2ecc71", "#3498db", "#e74c3c"]  # Green, blue, red
     explode = (0.05, 0, 0)  # Slightly explode the shared portion
     
-    # Create figure
     fig, ax = plt.subplots(figsize=figsize)
     
-    # Create pie chart with enhanced styling
     wedges, texts, autotexts = ax.pie(sizes, labels=labels, autopct='%1.1f%%', 
                                      startangle=90, colors=colors, explode=explode,
                                      shadow=True, textprops={'fontsize': 10, 'weight': 'bold'})
     
-    # Enhance the appearance
     for autotext in autotexts:
         autotext.set_color('white')
         autotext.set_weight('bold')
     
-    # Set title
     if title is None:
         title = f"Gene Distribution: {group1_name} vs {group2_name}"
     ax.set_title(title, fontsize=14, fontweight='bold', pad=20)
@@ -71,41 +64,33 @@ def plot_pie_common_vs_exclusive(common: int, excl1: int, excl2: int,
 
 def plot_similarity_pie(similarities: List[Tuple[str, float]], ref_tissue: str,
                        title: str = None, figsize: Tuple[int, int] = (8, 6)):
-    """
-    Create an enhanced pie chart showing similarity distribution relative to a reference tissue
+    """Plot a pie chart showing similarity distribution relative to a reference tissue
     
     Args:
         similarities: List of (tissue_name, similarity_percentage) tuples
         ref_tissue: Name of reference tissue
         title: Optional custom title
-        figsize: Figure size tuple
-    """
+        figsize: Figure size tuple"""
     if not similarities:
         st.warning("No similarity data to display.")
         return
     
-    # Prepare data
     labels = [f"{tissue}\n({sim:.1f}%)" for tissue, sim in similarities]
     sizes = [sim for _, sim in similarities]
     
-    # Create color palette
     colors = plt.cm.viridis(np.linspace(0, 1, len(similarities)))
     
-    # Create figure
     fig, ax = plt.subplots(figsize=figsize)
     
-    # Create pie chart
     wedges, texts, autotexts = ax.pie(sizes, labels=labels, autopct='%1.1f%%', 
                                      startangle=90, colors=colors,
                                      textprops={'fontsize': 9, 'weight': 'bold'})
     
-    # Enhance appearance
     for autotext in autotexts:
         autotext.set_color('white')
         autotext.set_weight('bold')
         autotext.set_fontsize(8)
     
-    # Set title
     if title is None:
         title = f"Similarity Distribution Relative to '{ref_tissue}'"
     ax.set_title(title, fontsize=14, fontweight='bold', pad=20)
@@ -120,8 +105,7 @@ def plot_enhanced_heatmap(matrix: np.ndarray, xticklabels: List[str], yticklabel
                          title: str, cmap: str = "coolwarm", annot: bool = True,
                          fmt: str = ".2f", figsize: Tuple[int, int] = (8, 6),
                          mask_upper: bool = False, cbar_label: str = "Value"):
-    """
-    Create an enhanced heatmap with customizable options
+    """Plot a heatmap with customizable options
     
     Args:
         matrix: 2D numpy array of values
@@ -133,16 +117,13 @@ def plot_enhanced_heatmap(matrix: np.ndarray, xticklabels: List[str], yticklabel
         fmt: Format string for annotations
         figsize: Figure size tuple
         mask_upper: Whether to mask upper triangle
-        cbar_label: Label for colorbar
-    """
+        cbar_label: Label for colorbar"""
     fig, ax = plt.subplots(figsize=figsize)
     
-    # Create mask if requested
     mask = None
     if mask_upper:
         mask = np.triu(np.ones_like(matrix, dtype=bool), k=1)
     
-    # Create heatmap
     heatmap = sns.heatmap(matrix, 
                          annot=annot, 
                          fmt=fmt,
@@ -155,7 +136,6 @@ def plot_enhanced_heatmap(matrix: np.ndarray, xticklabels: List[str], yticklabel
                          cbar_kws={'label': cbar_label},
                          ax=ax)
     
-    # Enhance appearance
     ax.set_title(title, fontsize=16, fontweight='bold', pad=20)
     
     # Rotate labels if they're long
@@ -171,8 +151,7 @@ def plot_enhanced_heatmap(matrix: np.ndarray, xticklabels: List[str], yticklabel
 def plot_gene_count_comparison(tissues: List[str], counts1: List[int], counts2: List[int] = None,
                               labels: List[str] = None, title: str = "Gene Count Comparison",
                               figsize: Tuple[int, int] = (10, 5), colors: List[str] = None):
-    """
-    Create an enhanced bar chart comparing gene counts across tissues
+    """Plot a bar chart comparing gene counts across tissues
     
     Args:
         tissues: List of tissue names
@@ -181,8 +160,7 @@ def plot_gene_count_comparison(tissues: List[str], counts1: List[int], counts2: 
         labels: Labels for the conditions
         title: Plot title
         figsize: Figure size tuple
-        colors: Custom colors for bars
-    """
+        colors: Custom colors for bars"""
     fig, ax = plt.subplots(figsize=figsize)
     
     x = np.arange(len(tissues))
@@ -196,7 +174,6 @@ def plot_gene_count_comparison(tissues: List[str], counts1: List[int], counts2: 
     if labels is None:
         labels = ['Condition 1', 'Condition 2'] if counts2 is not None else ['Gene Count']
     
-    # Create bars
     bars1 = ax.bar(x - width/2 if counts2 is not None else x, counts1, width,
                    label=labels[0], color=colors[0], alpha=0.8, edgecolor='black', linewidth=1.2)
     
@@ -204,7 +181,6 @@ def plot_gene_count_comparison(tissues: List[str], counts1: List[int], counts2: 
         bars2 = ax.bar(x + width/2, counts2, width,
                        label=labels[1], color=colors[1], alpha=0.8, edgecolor='black', linewidth=1.2)
     
-    # Add value labels on bars
     def add_value_labels(bars):
         for bar in bars:
             height = bar.get_height()
@@ -215,7 +191,6 @@ def plot_gene_count_comparison(tissues: List[str], counts1: List[int], counts2: 
     if counts2 is not None:
         add_value_labels(bars2)
     
-    # Enhance appearance
     ax.set_xlabel('Tissue', fontsize=12, fontweight='bold')
     ax.set_ylabel('Number of Genes', fontsize=12, fontweight='bold')
     ax.set_title(title, fontsize=16, fontweight='bold', pad=20)
@@ -233,8 +208,7 @@ def plot_gene_count_comparison(tissues: List[str], counts1: List[int], counts2: 
 def plot_age_progression(age_groups: List[str], values: List[float], 
                         tissue_name: str = "Tissue", metric: str = "Gene Count",
                         figsize: Tuple[int, int] = (8, 5), color: str = '#2ecc71'):
-    """
-    Create an enhanced line plot showing progression across age groups
+    """Plot a line plot showing progression across age groups
     
     Args:
         age_groups: List of age group labels
@@ -242,8 +216,7 @@ def plot_age_progression(age_groups: List[str], values: List[float],
         tissue_name: Name of tissue being analyzed
         metric: Name of metric being plotted
         figsize: Figure size tuple
-        color: Line color
-    """
+        color: Line color"""
     fig, ax = plt.subplots(figsize=figsize)
     
     # Create line plot with filled area
@@ -251,12 +224,10 @@ def plot_age_progression(age_groups: List[str], values: List[float],
            color=color, markerfacecolor='white', markeredgecolor=color, markeredgewidth=2)
     ax.fill_between(age_groups, values, alpha=0.3, color=color)
     
-    # Add value labels
     for i, value in enumerate(values):
         ax.text(i, value + max(values)*0.02, f'{value:.1f}', 
                ha='center', va='bottom', fontweight='bold')
     
-    # Enhance appearance
     ax.set_title(f"{metric} Progression: {tissue_name}", fontsize=16, fontweight='bold', pad=20)
     ax.set_xlabel('Age Group', fontsize=12, fontweight='bold')
     ax.set_ylabel(metric, fontsize=12, fontweight='bold')
@@ -269,17 +240,15 @@ def plot_age_progression(age_groups: List[str], values: List[float],
 
 def plot_venn_diagram_data(set1: set, set2: set, set1_name: str, set2_name: str,
                           figsize: Tuple[int, int] = (8, 5)):
-    """
-    Create a visual representation of Venn diagram data using bar charts
-    (Since matplotlib-venn is not available, we use bar charts to show overlap)
+    """Create a visual representation of Venn diagram data using bar charts
+    Overlap counts are shown as bars rather than a Venn diagram.
     
     Args:
         set1: First set of items
         set2: Second set of items
         set1_name: Name of first set
         set2_name: Name of second set
-        figsize: Figure size tuple
-    """
+        figsize: Figure size tuple"""
     # Calculate overlaps
     intersection = len(set1 & set2)
     only_set1 = len(set1 - set2)
@@ -298,7 +267,6 @@ def plot_venn_diagram_data(set1: set, set2: set, set1_name: str, set2_name: str,
     ax1.set_ylabel('Number of Genes', fontsize=12, fontweight='bold')
     ax1.grid(True, alpha=0.3, axis='y')
     
-    # Add value labels
     for bar in bars:
         height = bar.get_height()
         ax1.text(bar.get_x() + bar.get_width()/2., height + max(values)*0.01,
@@ -331,7 +299,6 @@ def plot_similarity_matrix_with_clustering(matrix: np.ndarray, labels: List[str]
         # Create figure with dendrogram
         fig = plt.figure(figsize=figsize)
         
-        # Create grid
         gs = fig.add_gridspec(2, 2, width_ratios=[1, 4], height_ratios=[1, 4],
                              hspace=0.05, wspace=0.05)
         
@@ -363,20 +330,16 @@ def plot_similarity_matrix_with_clustering(matrix: np.ndarray, labels: List[str]
         matrix_ordered = matrix
         labels_ordered = labels
     
-    # Create heatmap
     im = ax_heatmap.imshow(matrix_ordered, cmap='coolwarm', aspect='equal')
     
-    # Set ticks and labels
     ax_heatmap.set_xticks(range(len(labels_ordered)))
     ax_heatmap.set_yticks(range(len(labels_ordered)))
     ax_heatmap.set_xticklabels(labels_ordered, rotation=45, ha='right')
     ax_heatmap.set_yticklabels(labels_ordered)
     
-    # Add colorbar
     cbar = plt.colorbar(im, ax=ax_heatmap)
     cbar.set_label('Similarity', fontsize=12, fontweight='bold')
     
-    # Add value annotations
     for i in range(len(labels_ordered)):
         for j in range(len(labels_ordered)):
             text = ax_heatmap.text(j, i, f'{matrix_ordered[i, j]:.2f}',
@@ -410,14 +373,12 @@ def plot_gene_frequency_distribution(gene_frequencies: Dict[str, int],
     genes = [item[0] for item in sorted_genes]
     frequencies = [item[1] for item in sorted_genes]
     
-    # Create plot
     fig, ax = plt.subplots(figsize=figsize)
     
     # Create bars with gradient colors
     colors = plt.cm.viridis(np.linspace(0, 1, len(genes)))
     bars = ax.bar(range(len(genes)), frequencies, color=colors, alpha=0.8, edgecolor='black')
     
-    # Customize appearance
     ax.set_xlabel('Genes', fontsize=12, fontweight='bold')
     ax.set_ylabel('Frequency', fontsize=12, fontweight='bold')
     ax.set_title(title, fontsize=16, fontweight='bold', pad=20)
@@ -425,7 +386,6 @@ def plot_gene_frequency_distribution(gene_frequencies: Dict[str, int],
     ax.set_xticklabels(genes, rotation=45, ha='right')
     ax.grid(True, alpha=0.3, axis='y')
     
-    # Add value labels
     for bar in bars:
         height = bar.get_height()
         ax.text(bar.get_x() + bar.get_width()/2., height + max(frequencies)*0.01,
@@ -437,15 +397,13 @@ def plot_gene_frequency_distribution(gene_frequencies: Dict[str, int],
 
 def plot_correlation_heatmap(correlation_matrix: np.ndarray, labels: List[str],
                            title: str = "Correlation Matrix", figsize: Tuple[int, int] = (8, 6)):
-    """
-    Create a correlation heatmap with enhanced styling
+    """Create a correlation heatmap
     
     Args:
         correlation_matrix: Correlation matrix
         labels: Labels for matrix rows/columns
         title: Plot title
-        figsize: Figure size tuple
-    """
+        figsize: Figure size tuple"""
     fig, ax = plt.subplots(figsize=figsize)
     
     # Create heatmap with diverging colormap
@@ -466,7 +424,6 @@ def plot_correlation_heatmap(correlation_matrix: np.ndarray, labels: List[str],
     
     ax.set_title(title, fontsize=16, fontweight='bold', pad=20)
     
-    # Rotate labels if needed
     if any(len(label) > 8 for label in labels):
         plt.xticks(rotation=45, ha='right')
         plt.yticks(rotation=0)
@@ -476,13 +433,11 @@ def plot_correlation_heatmap(correlation_matrix: np.ndarray, labels: List[str],
     plt.close()
 
 def create_summary_dashboard(data_summary: Dict, figsize: Tuple[int, int] = (14, 9)):
-    """
-    Create a comprehensive dashboard summarizing the analysis
+    """Plot a dashboard of the analysis summary
     
     Args:
         data_summary: Dictionary containing summary statistics
-        figsize: Figure size tuple
-    """
+        figsize: Figure size tuple"""
     fig, axes = plt.subplots(2, 3, figsize=figsize)
     fig.suptitle('STAMP Analysis Summary Dashboard', fontsize=20, fontweight='bold')
     
@@ -544,7 +499,6 @@ def create_summary_dashboard(data_summary: Dict, figsize: Tuple[int, int] = (14,
         axes[5].set_title('Summary Metrics', fontweight='bold')
         axes[5].tick_params(axis='x', rotation=45)
         
-        # Add value labels
         for bar in bars:
             height = bar.get_height()
             axes[5].text(bar.get_x() + bar.get_width()/2., height + max(metric_values)*0.01,

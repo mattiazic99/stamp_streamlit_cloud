@@ -1,1 +1,10 @@
-# TODO: Cassandra + Python service
+# Interface only. Run statistical reproduction from the separate Python environment.
+name: stamp-interface
+services:
+  stamp:
+    build:
+      context: .
+    image: stamp-interface:latest
+    ports:
+      - "127.0.0.1:8501:8501"
+    restart: unless-stopped

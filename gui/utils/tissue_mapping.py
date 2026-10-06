@@ -1,31 +1,27 @@
-# utils/tissue_mapping.py
-"""
-Sistema di mapping intelligente per nomi dei tessuti
-Converte nomi di file lunghi in etichette pulite per grafici
-"""
+"""GTEx tissue labels, anatomical groups and plot colours."""
 
 import re
 from typing import Dict, List, Tuple
 
-# Dizionario di mapping completo per tutti i tessuti
+# Full display-name mapping for the GTEx tissues.
 TISSUE_MAPPING = {
-    # ADIPOSE TISSUES
+    # Adipose tissues
     "Adipose - Subcutaneous_sets_mapped": "Adipose - Subcutaneous",
     "Adipose - Visceral (Omentum)_sets_mapped": "Adipose - Visceral",
     
-    # ENDOCRINE SYSTEM
+    # Endocrine system
     "Adrenal Gland_sets_mapped": "Adrenal Gland",
     "Pituitary_sets_mapped": "Pituitary",
     "Thyroid_sets_mapped": "Thyroid",
     
-    # CARDIOVASCULAR SYSTEM
+    # Cardiovascular system
     "Artery - Aorta_sets_mapped": "Aorta",
     "Artery - Coronary_sets_mapped": "Coronary Artery",
     "Artery - Tibial_sets_mapped": "Tibial Artery",
     "Heart - Atrial Appendage_sets_mapped": "Heart - Atrium",
     "Heart - Left Ventricle_sets_mapped": "Heart - Ventricle",
     
-    # CENTRAL NERVOUS SYSTEM
+    # Central nervous system
     "Brain - Amygdala_sets_mapped": "Amygdala",
     "Brain - Anterior cingulate cortex (BA24)_sets_mapped": "Anterior Cingulate",
     "Brain - Caudate (basal ganglia)_sets_mapped": "Caudate",
@@ -40,10 +36,10 @@ TISSUE_MAPPING = {
     "Brain - Spinal cord (cervical c-1)_sets_mapped": "Spinal Cord",
     "Brain - Substantia nigra_sets_mapped": "Substantia Nigra",
     
-    # PERIPHERAL NERVOUS SYSTEM
+    # Peripheral nervous system
     "Nerve - Tibial_sets_mapped": "Tibial Nerve",
     
-    # REPRODUCTIVE SYSTEM
+    # Reproductive system
     "Breast - Mammary Tissue_sets_mapped": "Breast",
     "Cervix - Ectocervix_sets_mapped": "Cervix - Ecto",
     "Cervix - Endocervix_sets_mapped": "Cervix - Endo",
@@ -54,7 +50,7 @@ TISSUE_MAPPING = {
     "Vagina_sets_mapped": "Vagina",
     "Fallopian Tube_sets_mapped": "Fallopian Tube",
     
-    # DIGESTIVE SYSTEM
+    # Digestive system
     "Colon - Sigmoid_sets_mapped": "Colon - Sigmoid",
     "Colon - Transverse_sets_mapped": "Colon - Transverse",
     "Esophagus - Gastroesophageal Junction_sets_mapped": "Esophagus - GE Junction",
@@ -66,33 +62,33 @@ TISSUE_MAPPING = {
     "Spleen_sets_mapped": "Spleen",
     "Stomach_sets_mapped": "Stomach",
     
-    # URINARY SYSTEM
+    # Urinary system
     "Bladder_sets_mapped": "Bladder",
     "Kidney - Cortex_sets_mapped": "Kidney - Cortex",
     "Kidney - Medulla_sets_mapped": "Kidney - Medulla",
     
-    # RESPIRATORY SYSTEM
+    # Respiratory system
     "Lung_sets_mapped": "Lung",
     
-    # MUSCULOSKELETAL SYSTEM
+    # Musculoskeletal system
     "Muscle - Skeletal_sets_mapped": "Skeletal Muscle",
     
-    # INTEGUMENTARY SYSTEM
+    # Integumentary system
     "Skin - Not Sun Exposed (Suprapubic)_sets_mapped": "Skin - Protected",
     "Skin - Sun Exposed (Lower leg)_sets_mapped": "Skin - Exposed",
     
-    # ENDOCRINE GLANDS
+    # Endocrine glands
     "Minor Salivary Gland_sets_mapped": "Salivary Gland",
     
-    # CELL LINES
+    # Cell lines
     "Cells - Cultured fibroblasts_sets_mapped": "Fibroblasts",
     "Cells - EBV-transformed lymphocytes_sets_mapped": "Lymphocytes",
     
-    # BLOOD
+    # Blood
     "Whole Blood_sets_mapped": "Whole Blood"
 }
 
-# Categorizzazione per sistemi anatomici
+# Grouping by anatomical system.
 TISSUE_CATEGORIES = {
     "Nervous System": [
         "Amygdala", "Anterior Cingulate", "Caudate", "Cerebellum", 
@@ -123,48 +119,38 @@ TISSUE_CATEGORIES = {
     ]
 }
 
-# Colori per categoria (per grafici consistenti)
+# One colour per category, so figures stay consistent across pages.
 CATEGORY_COLORS = {
-    "Nervous System": "#8E44AD",      # Viola
-    "Cardiovascular": "#E74C3C",      # Rosso
-    "Digestive System": "#F39C12",    # Arancione
-    "Reproductive": "#E91E63",        # Rosa
-    "Urinary": "#3498DB",             # Blu
-    "Endocrine": "#9B59B6",           # Viola chiaro
-    "Other": "#95A5A6"                # Grigio
+    "Nervous System": "#8E44AD",      # Purple
+    "Cardiovascular": "#E74C3C",      # Red
+    "Digestive System": "#F39C12",    # Orange
+    "Reproductive": "#E91E63",        # Pink
+    "Urinary": "#3498DB",             # Blue
+    "Endocrine": "#9B59B6",           # Light purple
+    "Other": "#95A5A6"                # Grey
 }
 
 def clean_tissue_name(filename: str) -> str:
-    """
-    Pulisce automaticamente il nome del file per ottenere un nome tessuto leggibile
-    
-    Args:
-        filename: Nome del file originale
-        
-    Returns:
-        Nome tessuto pulito
-    """
-    # Rimuovi estensioni comuni
+    """Return the mapped tissue label, or clean the filename if it is unknown."""
+    # Remove common file extensions.
     clean_name = filename.replace('.txt', '').replace('.csv', '')
     
-    # Rimuovi suffissi comuni
+    # Remove pipeline suffixes.
     suffixes_to_remove = ['_sets_mapped', '_sets', '_mapped', '_data', '_switching']
     for suffix in suffixes_to_remove:
         clean_name = clean_name.replace(suffix, '')
     
-    # Usa il mapping se disponibile
+    # Prefer the explicit tissue mapping.
     if filename in TISSUE_MAPPING:
         return TISSUE_MAPPING[filename]
     
-    # Pulizia automatica se non nel mapping
-    # Capitalizza correttamente
+    # Fall back to automatic cleanup for names outside the mapping.
     clean_name = clean_name.replace('_', ' ').replace('-', ' - ')
     
-    # Gestisci casi speciali
-    clean_name = re.sub(r'\s+', ' ', clean_name)  # Rimuovi spazi multipli
+    clean_name = re.sub(r'\s+', ' ', clean_name)  # Collapse whitespace.
     clean_name = clean_name.strip()
     
-    # Capitalizza ogni parola tranne articoli e preposizioni
+    # Keep articles and prepositions lowercase within a label.
     words = clean_name.split()
     capitalized_words = []
     
@@ -177,40 +163,19 @@ def clean_tissue_name(filename: str) -> str:
     return ' '.join(capitalized_words)
 
 def get_tissue_category(tissue_name: str) -> str:
-    """
-    Ottiene la categoria anatomica del tessuto
-    
-    Args:
-        tissue_name: Nome del tessuto pulito
-        
-    Returns:
-        Categoria del tessuto
-    """
+    """Return the anatomical category, or Other for an unmapped tissue."""
     for category, tissues in TISSUE_CATEGORIES.items():
         if tissue_name in tissues:
             return category
     return "Other"
 
 def get_category_color(tissue_name: str) -> str:
-    """
-    Ottiene il colore associato alla categoria del tessuto
-    
-    Args:
-        tissue_name: Nome del tessuto pulito
-        
-    Returns:
-        Codice colore hex
-    """
+    """Return the hex colour for the tissue category."""
     category = get_tissue_category(tissue_name)
     return CATEGORY_COLORS.get(category, "#95A5A6")
 
 def create_tissue_summary() -> Dict:
-    """
-    Crea un summary delle mappature disponibili
-    
-    Returns:
-        Dizionario con statistiche delle mappature
-    """
+    """Return tissue counts, mapped labels and available categories."""
     total_tissues = len(TISSUE_MAPPING)
     categories_count = {cat: len(tissues) for cat, tissues in TISSUE_CATEGORIES.items()}
     
@@ -222,53 +187,31 @@ def create_tissue_summary() -> Dict:
     }
 
 def batch_clean_tissue_names(filenames: List[str]) -> Dict[str, str]:
-    """
-    Pulisce una lista di nomi file in batch
-    
-    Args:
-        filenames: Lista di nomi file da pulire
-        
-    Returns:
-        Dizionario {filename_originale: nome_pulito}
-    """
+    """Return a mapping from filenames to readable tissue labels."""
     return {filename: clean_tissue_name(filename) for filename in filenames}
 
 def get_tissues_by_category() -> Dict[str, List[str]]:
-    """
-    Ottiene tessuti organizzati per categoria
-    
-    Returns:
-        Dizionario con tessuti per categoria
-    """
+    """Return a shallow copy of the tissue categories."""
     return TISSUE_CATEGORIES.copy()
 
 def suggest_short_names(max_length: int = 15) -> Dict[str, str]:
-    """
-    Suggerisce nomi abbreviati per tessuti con nomi lunghi
-    
-    Args:
-        max_length: Lunghezza massima dei nomi
-        
-    Returns:
-        Dizionario con abbreviazioni suggerite
-    """
+    """Return abbreviated labels for tissue names longer than max_length."""
     abbreviations = {}
     
     for original, clean in TISSUE_MAPPING.items():
         if len(clean) > max_length:
-            # Crea abbreviazione intelligente
             words = clean.split()
             if len(words) == 1:
-                # Singola parola lunga - tronca
+                # Truncate a single long word.
                 abbrev = clean[:max_length-3] + "..."
             elif " - " in clean:
-                # Ha sottotipo - mantieni parte principale + sottotipo abbreviato
+                # Keep the main tissue name and abbreviate the subtype.
                 parts = clean.split(" - ")
                 main = parts[0]
                 sub = parts[1][:3] if len(parts[1]) > 3 else parts[1]
                 abbrev = f"{main} - {sub}"
             else:
-                # Parole multiple - usa prime lettere
+                # Abbreviate each word to its first three letters.
                 abbrev = ' '.join([word[:3] for word in words])
             
             if len(abbrev) > max_length:
@@ -278,9 +221,8 @@ def suggest_short_names(max_length: int = 15) -> Dict[str, str]:
     
     return abbreviations
 
-# Esempi di utilizzo
 if __name__ == "__main__":
-    # Test del sistema
+    # Manual smoke test.
     test_files = [
         "Brain - Anterior cingulate cortex (BA24)_sets_mapped.txt",
         "Skin - Not Sun Exposed (Suprapubic)_sets_mapped.txt",
@@ -301,7 +243,6 @@ if __name__ == "__main__":
         print(f"🎨 {color}")
         print("-" * 30)
     
-    # Summary
     summary = create_tissue_summary()
     print(f"\n📊 Summary: {summary['total_tissues']} tissues mapped")
     for cat, count in summary['categories'].items():

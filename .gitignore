@@ -1,18 +1,66 @@
 # Python
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
 *.egg-info/
+.eggs/
+.venv/
+venv/
+.venv-validation/
+.pytest_cache/
+.ruff_cache/
 .ipynb_checkpoints/
-.DS_Store
 
-# Raw GTEx data is NEVER committed (not needed by the web app; huge).
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.tmp.*
+
+# Full GTEx inputs are distributed separately; the interface uses the atlas.
+# Keep data/demo/: it supports the single-tissue reproduction in README Level 2.
 data/parquet/**
 data/external/**
-!**/.gitkeep
 
-# All-tissues outputs are unused by the app (it runs in complete-age-bins mode).
+# Keep output/{v8,v10}_complete/: these atlases are bundled with the interface.
+# Exclude the all-tissues outputs below.
 output/v8/**
 output/v10/**
 output/compare/**
+
+# Results produced by re-running the statistical validation locally.
+output/**/statistical_validation_cli/
+validation/reports/*
+!validation/reports/.gitkeep
+
+# Keep the directory placeholders above.
 !**/.gitkeep
+
+# Private research pages, including copies restored at the old path.
+gui/_local/
+gui/_archive/
+gui/analysis_modules/ad_threshold_sweep.py
+
+# Local reproduction inputs, experiment outputs and environments.
+reproducibility_data/
+output/reproduction/
+.venv-reproduction/
+tmp/reproduction_restore/
+tmp/verify_historical/
+tmp/full_ovary/
+tmp/clean_reproduction_checkout/
+
+# Generated interface downloads and build artifacts.
+gui/output/
+build/
+
+# Local audit computations and test probes.
+tmp/audit_checkpoint/
+tmp/audit_fix_threshold/
+tmp/docker_context_probe/
+tmp/audit_unowned/
+
+# Internal review notes and verification reports.
+reproducibility/manuscript_corrections.md
+reproducibility/audit_fixes.md
+reproducibility/verification_report.json
