@@ -7,9 +7,12 @@ also compares events with GTEx v8.
 
 ## Docker
 
-Install and start [Docker Desktop](https://docs.docker.com/get-started/get-docker/),
-using Linux containers on Windows. Docker includes Python and the interface dependencies.
-Statistical experiments use the separate environment described below.
+Docker can run STAMP on **Windows, macOS and Linux**. On Windows and macOS,
+install and start [Docker Desktop](https://docs.docker.com/get-started/get-docker/).
+On Linux, use Docker Engine with Compose or Docker Desktop.
+The image runs Linux internally; Docker Desktop provides that environment on
+Windows and macOS. On Windows, select Linux containers. Python and the interface
+dependencies are included. Statistical experiments run separately, as described below.
 
 ### Ready-to-run image
 
