@@ -5,54 +5,25 @@
 STAMP explores gene switching across age groups using GTEx v10. Panel Explorer
 also compares events with GTEx v8.
 
-## Docker
+## Run locally with a Docker container
 
-Docker can run STAMP on **Windows, macOS and Linux**. On Windows and macOS,
-install and start [Docker Desktop](https://docs.docker.com/get-started/get-docker/).
-On Linux, use Docker Engine with Compose or Docker Desktop.
-The image runs Linux internally; Docker Desktop provides that environment on
-Windows and macOS. On Windows, select Linux containers. Python and the interface
-dependencies are included. Statistical experiments run separately, as described below.
-
-### Ready-to-run image
-
-Download [stamp-interface-linux-amd64.tar](https://github.com/mattiazic99/stamp_streamlit_cloud/releases/download/review-2026-10-06/stamp-interface-linux-amd64.tar)
-and its [SHA-256 checksum](https://github.com/mattiazic99/stamp_streamlit_cloud/releases/download/review-2026-10-06/stamp-interface-linux-amd64.tar.sha256).
-The image contains the interface and atlas for `linux/amd64`;
-Apple Silicon Macs require amd64 emulation.
-To verify the download on PowerShell, run
-`Get-FileHash stamp-interface-linux-amd64.tar -Algorithm SHA256` and compare the
-hash with the first value in the `.sha256` file (ignoring letter case).
-Open a terminal in the folder containing the downloaded archive and run:
+Start [Docker Desktop](https://docs.docker.com/get-started/get-docker/) and download
+[the Docker image](https://github.com/mattiazic99/stamp_streamlit_cloud/releases/download/review-2026-10-06/stamp-interface-linux-amd64.tar)
+([SHA-256 checksum](https://github.com/mattiazic99/stamp_streamlit_cloud/releases/download/review-2026-10-06/stamp-interface-linux-amd64.tar.sha256)).
+The image includes the interface and atlas for `linux/amd64`; Apple Silicon Macs
+require amd64 emulation. From the download folder, run:
 
 ```bash
 docker load --input stamp-interface-linux-amd64.tar
 docker run --detach --name stamp-interface --publish 127.0.0.1:8501:8501 stamp-interface:latest
 ```
 
-After startup, open [localhost:8501](http://localhost:8501).
-To stop or restart this container:
+Open [localhost:8501](http://localhost:8501). Stop with `docker stop stamp-interface`
+and restart with `docker start stamp-interface`. To replace the container,
+stop it and run `docker rm stamp-interface` before loading a newer image.
 
-```bash
-docker stop stamp-interface
-docker start stamp-interface
-```
-
-Before loading a newer release, stop the old container and remove it with
-`docker rm stamp-interface`, then repeat the load and run commands.
-
-### Build from source
-
-Alternatively, download and extract this repository, or clone it. Open a terminal
-in the folder containing `Dockerfile` and `docker-compose.yml`, then run:
-
-```bash
-docker compose up --build --wait
-```
-
-The first build requires an internet connection. When the command returns, open
-[localhost:8501](http://localhost:8501). To stop and remove this container, run
-`docker compose down` from the same folder. Use one Docker method at a time.
+Alternatively, build from the repository with `docker compose up --build --wait`;
+stop with `docker compose down`. Use one Docker method at a time.
 
 ## Local installation
 
@@ -66,10 +37,6 @@ python -m streamlit run gui/main.py --server.port=8502
 
 Open [localhost:8502](http://localhost:8502). Press **Ctrl+C** to stop the app.
 This installs the interface dependencies into the Python environment in use.
-
-For Streamlit Community Cloud, select `streamlit_app.py` and **Python 3.11** in
-**Advanced settings**. An existing app must be redeployed to change its Python
-version: [deployment instructions](https://docs.streamlit.io/deploy/streamlit-community-cloud/manage-your-app/upgrade-python).
 
 In all interface modes, generated files stay in session memory. Download the ZIP
 to save them on your computer; **Start New Generation** clears the current results.
