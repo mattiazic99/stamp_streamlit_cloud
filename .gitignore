@@ -18,7 +18,7 @@ Thumbs.db
 *.tmp.*
 
 # Full GTEx inputs are distributed separately; the interface uses the atlas.
-# Keep data/demo/: it supports the single-tissue reproduction in README Level 2.
+# Keep data/demo/: it supports the bundled Ovary replay.
 data/parquet/**
 data/external/**
 
