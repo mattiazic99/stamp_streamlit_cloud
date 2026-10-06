@@ -2,8 +2,7 @@
 
 [Open the application](https://stampv2.streamlit.app/)
 
-STAMP explores gene switching across age groups using GTEx v10. Panel Explorer
-also compares events with GTEx v8.
+STAMP explores gene switching across age groups using GTEx v10.
 
 ## Run locally with a Docker container
 
