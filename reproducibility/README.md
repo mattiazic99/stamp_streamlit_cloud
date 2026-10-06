@@ -208,5 +208,7 @@ stability, and SMOTE is a secondary sensitivity analysis. Neither adds independe
 donors nor enlarges the primary 13-tissue discovery set.
 
 Exact fresh replay has been reported on two different Intel CPU configurations.
-Complete cross-platform numerical identity has not yet been established; GitHub CI
-and a fresh full 50-tissue reproduction remain pending.
+[GitHub CI](https://github.com/mattiazic99/stamp_streamlit_cloud/actions) has passed
+the reference checks and fresh demo on Ubuntu and Windows, plus the interface
+container checks. Complete cross-platform numerical identity and a fresh full
+50-tissue reproduction have not yet been established.

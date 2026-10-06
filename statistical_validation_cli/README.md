@@ -6,7 +6,7 @@ in a tissue greater than expected when the age brackets of the donors are
 permuted at random?
 
 Step-by-step commands, expected results and the isolated-environment setup are
-in the [main README](../README.md#reproducing-the-manuscript-statistical-validation).
+in the [reproduction protocol](../reproducibility/README.md).
 This file documents the behaviour of the modules themselves.
 
 Run everything from the repository root.

@@ -43,6 +43,7 @@ gui/analysis_modules/ad_threshold_sweep.py
 
 # Local reproduction inputs, experiment outputs and environments.
 reproducibility_data/
+input-parts/
 output/reproduction/
 .venv-reproduction/
 tmp/reproduction_restore/

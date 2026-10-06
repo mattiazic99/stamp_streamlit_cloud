@@ -3,8 +3,8 @@
 #
 # Install this in a SEPARATE virtual environment from the app: imbalanced-learn
 # pins a narrow scikit-learn range, and mixing it into the app environment is
-# what breaks the SMOTE stage. See README.md, "Reproducing the statistical
-# validation".
+# what breaks the SMOTE stage. See reproducibility/README.md for the manuscript
+# reproduction commands and pinned environment.
 #
 #     python -m venv .venv-validation
 #     .venv-validation/bin/pip install -r requirements.txt -r requirements-validation.txt

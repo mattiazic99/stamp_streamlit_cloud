@@ -4,7 +4,7 @@ type: software
 title: "STAMP: Spatio-Temporal Analysis and Mapping of gene-expression Patterns"
 version: 1.0.0
 repository-code: "https://github.com/mattiazic99/stamp_streamlit_cloud"
-url: "https://stampgui.streamlit.app/"
+url: "https://stampv2.streamlit.app/"
 authors:
   - family-names: Kahveci
     given-names: O.
