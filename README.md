@@ -24,20 +24,7 @@ stop it and run `docker rm stamp-interface` before loading a newer image.
 Alternatively, build from the repository with `docker compose up --build --wait`;
 stop with `docker compose down`. Use one Docker method at a time.
 
-## Local installation
-
-Use **Python 3.11**. Check that `python --version` reports 3.11 before installing.
-From the repository root, run:
-
-```bash
-python -m pip install -r requirements-interface.lock.txt
-python -m streamlit run gui/main.py --server.port=8502
-```
-
-Open [localhost:8502](http://localhost:8502). Press **Ctrl+C** to stop the app.
-This installs the interface dependencies into the Python environment in use.
-
-In all interface modes, generated files stay in session memory. Download the ZIP
+Generated files stay in session memory. Download the ZIP
 to save them on your computer; **Start New Generation** clears the current results.
 
 ## Statistical reproducibility
